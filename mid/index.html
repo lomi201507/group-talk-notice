@@ -517,7 +517,7 @@ h3{color:var(--ink)}
       <li>친구 화면은 보지 마세요.</li>
       <li>내가 알게 된 것을 친구에게 귓속말로 알려 주세요.</li>
       <li>모르면 친구에게 물어보세요.</li>
-      <li>진짜 장소를 찾으면 성공이에요!</li>
+      <li>장소를 찾고, 다시 알려 줄 메시지를 보내면 성공!</li>
     </ol>
     <div class="row inav"><button class="btn ghost" id="toStory" type="button">◀ 이야기</button><button class="btn" id="introBack" type="button">게임으로 돌아가기</button></div></div>
   </section>
@@ -682,7 +682,7 @@ function wireMissions(){
 function say1(t){const el=document.createElement('div');el.className='fb no';el.style.cssText='position:absolute;left:50%;top:50px;transform:translateX(-50%);z-index:9;font-size:18px;max-width:90%;background:#fffaf0;box-shadow:4px 4px 0 #2b2622';el.textContent=t;$('#stage').appendChild(el);setTimeout(()=>el.remove(),4000);}
 const V=[],W=[];
 let T15=null;
-const TITLE=()=>`<div class="title"><div class="sub">누가 2층이래?</div><h1>단톡방에서 나만 공지를 못 봤다</h1><img class="lineup" src="img/lineup_names.webp" alt="별빛 팀 일곱 명: 린, 민수, 지아, 아리, 제이슨, 마리코, 줄리앙"><div class="goal">축제 결승 15분 전, 단톡방에 <b>전해 들은 말</b>이 돌고 있어요.<br>팀원과 단서를 말로 나누고, <b>확인된 말</b>과 <b>아직 모르는 말</b>을 구별해서 진짜 장소를 찾아 주세요.</div><button class="btn red" id="titleGo" type="button">시작하기 ▶</button></div>`;
+const TITLE=()=>`<div class="title"><div class="sub">누가 2층이래?</div><h1>단톡방에서 나만 공지를 못 봤다</h1><img class="lineup" src="img/lineup_names.webp" alt="별빛 팀 일곱 명: 린, 민수, 지아, 아리, 제이슨, 마리코, 줄리앙"><div class="goal">축제 결승 15분 전, 단톡방에 <b>전해 들은 말</b>이 돌고 있어요.<br>팀원과 단서를 말로 나누고, <b>확인된 말</b>과 <b>아직 모르는 말</b>을 구별해요.<br><b>장소를 찾고, 단톡방에 맞는 메시지를 보내면 성공!</b></div><button class="btn red" id="titleGo" type="button">시작하기 ▶</button></div>`;
 V[0]=()=>!S.seen?TITLE():`<div class="open">${DOODLE}
   <div class="o-timer">결승까지 <b id="t15">15:00</b></div>
   <div class="o-row">
