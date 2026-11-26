@@ -533,7 +533,8 @@ const ROLES=[
 const RP=k=>(ROLES.find(r=>r.k===k)||ROLES[0]).p;
 /* 역할별 링크: 게임 주소 뒤에 #lin, #hao, #solongo, #aye */
 const IN_CLAUDE=!!(window.claude&&window.claude.use);
-function GH_T(){if(IN_CLAUDE)return false;const ok=location.hash==='#teacher-byeolbit';try{if(ok)sessionStorage.setItem('gh_t','1');return sessionStorage.getItem('gh_t')==='1';}catch(e){return ok;}}
+const T_HASH='#teacher-byeolbit';
+function GH_T(){if(IN_CLAUDE)return false;const ok=location.hash===T_HASH;try{if(ok)localStorage.setItem('gh_t','1');return localStorage.getItem('gh_t')==='1';}catch(e){return ok;}}
 const BASE=location.origin+location.pathname;
 const HASH={lin:'listen',hao:'doc',solongo:'field',aye:'analysis'};
 const HASH_OF={listen:'lin',doc:'hao',field:'solongo',analysis:'aye'};
@@ -928,6 +929,7 @@ const RO=n=>{const c=n.charCodeAt(n.length-1)-0xAC00,j=c%28;return n+(c>=0&&c<11
 const IE=n=>{const c=n.charCodeAt(n.length-1)-0xAC00;return n+(c>=0&&c<11172&&c%28?'이에요':'예요');};
 const roleName=k=>{const r=ROLES.find(x=>x.k===k);return r?r.ko+' 탐정 '+P[r.p].n:'';};
 function route(){
+  if(!IN_CLAUDE&&location.hash===T_HASH){try{localStorage.setItem('gh_t','1');}catch(e){}IS_T=true;PREV=false;applyT();history.replaceState(null,'',location.pathname);}
   const h=decodeURIComponent(location.hash.slice(1));
   showTeacher(h==='teacher');
   if(h==='teacher')return;
