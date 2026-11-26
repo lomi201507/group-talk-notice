@@ -518,6 +518,8 @@ h3{color:var(--ink)}
 @keyframes fbshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @media (prefers-reduced-motion:reduce){.fb.shake{animation:none}}
 [data-p].no{border-color:#e07a6e!important;background:#fff0ed!important;color:#a3362c}
+.arrive{border-radius:12px;padding:8px 12px;font-weight:800;font-size:16px}
+.arrive.ok{background:#e6f4e4;color:#2f6b2a}.arrive.wait{background:#eaf1ff;color:#2f5fc4}.arrive.no{background:#fff4dc;color:#8a5a00}
 </style>
 
 <div class="page">
@@ -1003,7 +1005,15 @@ function resultData(){
     ordFirst:yn('w-'+S.role),m1First:yn('m1'),qFirst:yn('q'),clsFirst:yn('cls'),wFirst:String((S.wFirst||{})[S.role]||''),
     msg:S.msg||'',msgWrong:msgFirstWrong(),relay:!!S.relay,sentAt:Date.now()};
 }
-function sendBox(){
+let ARRIVE='wait',ARRIVE_T=null,ARRIVE_N=0;
+function arriveText(){return ARRIVE==='ok'?'<div class="arrive ok">✔ 선생님 화면에 도착했어요</div>':ARRIVE==='fail'?'<div class="arrive no">아직 도착하지 않았어요. 아래 카드를 캡처해서 선생님께 보내 주세요.</div>':'<div class="arrive wait">⏳ 선생님께 보내는 중이에요…</div>';}
+function ghSendBox(){return `<div class="sendbox"><b>선생님께 결과가 자동으로 전송돼요</b><div id="arrive">${arriveText()}</div>${resultCard()}</div>`;}
+async function checkArrive(){try{const r=await fetch(GAS_URL+'?t='+Date.now());const j=await r.json();const me=(j.rows||[]).find(x=>String(x.team)===String(S.team)&&x.role===S.role);
+    if(me&&me.done){ARRIVE='ok';clearInterval(ARRIVE_T);}}catch(e){}
+  ARRIVE_N++;if(ARRIVE!=='ok'&&ARRIVE_N>=10){ARRIVE='fail';clearInterval(ARRIVE_T);}
+  const a=document.getElementById('arrive');if(a)a.innerHTML=arriveText();}
+function startArrive(){if(ARRIVE==='ok'||ARRIVE_T)return;sendProg(true);ARRIVE='wait';ARRIVE_N=0;setTimeout(checkArrive,2500);ARRIVE_T=setInterval(checkArrive,3000);}
+function sendBox(){if(!IN_CLAUDE&&S.team)return ghSendBox();
   const teams=Array.from({length:10},(_,i)=>String(i+1));
   const summary=`<div style="font-size:14px;color:var(--soft)">팀 ${esc(S.team||'?')} · ${ROLES.find(r=>r.k===S.role)?.ko||''} 탐정 · 미션 1 ${S.m1Left!=null?mmss(S.m1Left)+' 남김':'-'}</div>`;
   if(S.sentOk) return `<div class="sendbox"><div class="fb ok">선생님께 결과를 보냈어요!</div>${summary}</div>`;
@@ -1017,14 +1027,14 @@ function sendBox(){
 function resultCard(){const r=resultData();const L=[["전달 문장", "ordFirst"], ["미션 1", "m1First"], ["되묻기", "qFirst"], ["확인/미확인 분류", "clsFirst"]];
   const OX=v=>v===null||v===undefined?'-':v?'O':'X';
   const role=ROLES.find(x=>x.k===S.role);
-  return `<div class="rescard"><div class="rch">결과 카드 <small>이 카드를 캡처해서 선생님께 보내 주세요</small></div>
+  return `<div class="rescard"><div class="rch">결과 카드 <small>전송이 안 될 때만 이 카드를 캡처해서 선생님께 보내 주세요</small></div>
   <div class="rcg"><span>팀</span><b>${esc(S.team)}팀</b><span>역할</span><b>${role?esc(role.ko+' 탐정 '+P[role.p].n):''}</b>
   <span>미션 1 남은 시간</span><b>${r.m1Left!=null?mmss(r.m1Left):'-'}</b>
   ${L.map(([t,k])=>`<span>${t}</span><b class="${r[k]?'o':'x'}">${OX(r[k])}</b>`).join('')}
   <span>처음 고른 전달 문장</span><b class="txt">${esc(r.wFirst||'-')}</b>
   <span>다시 알려 준 메시지</span><b class="txt">${esc(r.msg||'-')}</b></div>
   <div class="rct">${new Date().toLocaleString('ko-KR')}</div></div>`;}
-function wireSend(){
+function wireSend(){if(!IN_CLAUDE&&S.team){startArrive();return;}
   const sel=$('#teamSel');if(sel)sel.onchange=()=>{S.team=sel.value;save();render();};
   const b=$('#sendRes');if(b)b.onclick=async()=>{b.disabled=true;$('#sendMsg').textContent='보내는 중…';
     try{await DB.collection('results').doc(MYID).set(resultData());S.sentOk=true;save();render();}
