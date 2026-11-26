@@ -460,6 +460,8 @@ h3{color:var(--ink)}
   radial-gradient(ellipse 46% 44% at 50% 46%,rgba(9,16,40,.78),rgba(9,16,40,0) 100%),
   linear-gradient(180deg,rgba(11,20,52,.62),rgba(20,18,60,.74) 60%,rgba(11,16,40,.88)),
   url(img/bg_festival.webp) center 38%/cover no-repeat,#0f1a3a!important}
+.bgm{display:inline-flex;align-items:center;gap:8px}.bgm input{width:90px;accent-color:#5fd6cf}
+#bgmBtn[aria-pressed="true"]{border-color:#5fd6cf;color:#5fd6cf}
 </style>
 
 <div class="page">
@@ -475,7 +477,7 @@ h3{color:var(--ink)}
   <section class="teacher" aria-label="진행 도구">
     <div class="row tonly" id="tRow" hidden style="justify-content:space-between">
       <div class="row"><span class="tlabel">교사 도구</span><div class="jump" id="jump"></div></div>
-      <div class="row"><button class="btn ghost" id="prevBtn" type="button">학생 화면으로 보기</button><label style="font-size:14px"><input type="checkbox" id="demo"> 시연 모드 (프로젝터용 · 모든 단서 보기)</label></div>
+      <div class="row"><span class="bgm"><button class="btn ghost" id="bgmBtn" type="button" aria-pressed="false">♪ 음악 켜기</button><input type="range" id="bgmVol" min="0" max="100" value="50" aria-label="음악 크기"></span><button class="btn ghost" id="prevBtn" type="button">학생 화면으로 보기</button><label style="font-size:14px"><input type="checkbox" id="demo"> 시연 모드 (프로젝터용 · 모든 단서 보기)</label></div>
     </div>
     <div class="row bar">
       <button class="btn ghost tonly" id="introBtn" type="button" hidden>설명 화면</button>
@@ -808,6 +810,33 @@ function render(){
 }
 function reset(){const d=S.demo;S=fresh();S.demo=d;const h=HASH[location.hash.slice(1)];if(h){S.role=h;S.fromLink=true;}save();render();}
 $('#jump').onclick=e=>{if(!IS_T)return;const b=e.target.closest('[data-g]');if(!b)return;if(!S.role)S.role='listen';go(+b.dataset.g);};
+/* ---------- 교사 화면 배경 음악 (코드로 만든 음악) ---------- */
+let BGM=null;
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+const BGM_SET={
+  calm:{bpm:96,ch:[[60,64,67],[57,60,64],[53,57,60],[55,59,62]],bass:[48,45,41,43],hat:false,arp:.07},
+  tense:{bpm:132,ch:[[57,60,64],[53,57,60],[48,52,55],[52,56,59]],bass:[45,41,36,40],hat:true,arp:.06},
+  end:{bpm:112,ch:[[60,64,67],[55,59,62],[57,60,64],[53,57,60]],bass:[48,43,45,41],hat:false,arp:.08}};
+function bgmMood(){if(S.sc===4&&S.relay)return 'end';if(S.t0&&!S.m1&&S.sc>=1&&leftSec()<=180)return 'tense';return 'calm';}
+function bgmVolume(){const v=+(document.getElementById('bgmVol')||{value:50}).value/100;return v*.5;}
+function bgmNote(t,f,dur,vol,type){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.015);g.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(g).connect(BGM.lp);o.start(t);o.stop(t+dur+.05);}
+function bgmPad(t,f,dur,vol){const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.6);g.gain.setValueAtTime(vol,t+dur-.4);g.gain.linearRampToValueAtTime(0,t+dur);o.connect(g).connect(BGM.lp);o.start(t);o.stop(t+dur+.05);}
+function bgmHat(t){const src=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();src.buffer=BGM.noise;f.type='highpass';f.frequency.value=7000;g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);src.connect(f).connect(g).connect(BGM.lp);src.start(t);src.stop(t+.06);}
+function bgmTick(){if(!BGM)return;const m=BGM_SET[bgmMood()],spb=60/m.bpm/2,now=ac.currentTime;
+  while(BGM.next<now+.4){const t=BGM.next,bar=Math.floor(BGM.step/8)%4,i=BGM.step%8,ch=m.ch[bar];
+    if(i===0)ch.forEach(n=>bgmPad(t,mtof(n),spb*8,.045));
+    if(i===0||i===4)bgmNote(t,mtof(m.bass[bar]),spb*3,.12,'sine');
+    bgmNote(t,mtof(ch[[0,1,2,1,0,1,2,1][i]]+(i>=4?12:24)-12),spb*1.6,m.arp,'sine');
+    if(m.hat&&i%2===1)bgmHat(t);
+    BGM.next+=spb;BGM.step++;}
+  const target=(PLAYING?.2:1)*bgmVolume();BGM.g.gain.setTargetAtTime(target,now,.4);}
+function bgmStart(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();
+  const g=ac.createGain(),lp=ac.createBiquadFilter();g.gain.value=0;lp.type='lowpass';lp.frequency.value=2600;lp.connect(g).connect(ac.destination);
+  const nb=ac.createBuffer(1,ac.sampleRate*.1,ac.sampleRate),d=nb.getChannelData(0);for(let k=0;k<d.length;k++)d[k]=Math.random()*2-1;
+  BGM={g,lp,noise:nb,next:ac.currentTime+.15,step:0,timer:setInterval(bgmTick,100)};bgmTick();}catch(e){BGM=null;}}
+function bgmStop(){if(!BGM)return;const b=BGM;BGM=null;clearInterval(b.timer);try{const t=ac.currentTime;b.g.gain.cancelScheduledValues(t);b.g.gain.setValueAtTime(b.g.gain.value,t);b.g.gain.linearRampToValueAtTime(0,t+1);setTimeout(()=>{try{b.g.disconnect();}catch(e){}},1300);}catch(e){}}
+$('#bgmBtn').onclick=()=>{const b=$('#bgmBtn');if(BGM){bgmStop();b.textContent='♪ 음악 켜기';b.setAttribute('aria-pressed','false');}else{bgmStart();b.textContent='■ 음악 끄기';b.setAttribute('aria-pressed','true');}};
+$('#bgmVol').oninput=()=>{if(BGM)bgmTick();};
 $('#prevBtn').onclick=()=>{PREV=true;if(S.demo){S.demo=false;save();}applyT();render();window.scrollTo(0,0);};
 $('#prevBack').onclick=()=>{PREV=false;applyT();render();};
 $('#demo').onchange=e=>{S.demo=IS_T&&e.target.checked;save();render();};
