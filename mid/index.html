@@ -475,6 +475,8 @@ h3{color:var(--ink)}
 .clrow .clr{flex-basis:100%;font-size:15px;font-weight:600;border-radius:10px;padding:6px 10px;margin-top:2px}
 .clrow .clr.ok{background:#e6f4e4;color:#2f6b2a}.clrow .clr.no{background:#ffece8;color:#a3362c}
 .clrow:has(.clr.no){border-color:#e07a6e}
+.clsins{color:var(--soft);font-size:16px;margin-top:-4px}
+.clrow.miss{border-color:#f2c94c;box-shadow:0 0 0 2px #f2c94c66}
 </style>
 
 <div class="page">
@@ -765,7 +767,7 @@ V[3]=()=>`<div class="layer"><div class="panel"><h2>미션 2 · 확인된 것과
   ${bub('lucas','','…저 그런 말 안 했는데요.')}
   ${!S.q?`<h3>마리코에게 무엇을 확인할까요?</h3><div class="opts" id="qs">${QS.map(([t],j)=>`<button type="button" class="opt" data-j="${j}">${t}</button>`).join('')}</div><div id="fb"></div>`:
    bub('yuting','','직접은 아니에요… 지나가다가 다른 팀 친구가 “줄리앙이 2층으로 오래”라고 하는 걸 들었어요. ‘공연장’이라고 했는지는 잘 모르겠어요.','say')}
-  ${S.q&&!S.clsOk?`<h3>지금까지의 말을 나눠 보세요</h3><div class="cls">${CL.map(([t],j)=>`<div class="clrow"><span>${t}</span><span class="opts"><button type="button" class="opt" data-c="${j}-1" aria-pressed="${S.cls[j]===1}">확인됨</button><button type="button" class="opt" data-c="${j}-0" aria-pressed="${S.cls[j]===0}">확인 안 됨</button></span>${S.clsTry&&S.cls[j]!==undefined?(S.cls[j]===CL[j][1]?'<div class="clr ok">✔ 맞아요</div>':'<div class="clr no">✘ '+CLWHY[j]+'</div>'):''}</div>`).join('')}</div>
+  ${S.q&&!S.clsOk?`<h3>각 문장은 확인된 말일까요?</h3><div class="ins clsins">누가 직접 말했거나 기록에 있으면 ‘확인됨’을 고르세요.</div><div class="cls">${CL.map(([t],j)=>`<div class="clrow"><span>${t}</span><span class="opts"><button type="button" class="opt" data-c="${j}-1" aria-pressed="${S.cls[j]===1}">확인됨</button><button type="button" class="opt" data-c="${j}-0" aria-pressed="${S.cls[j]===0}">확인 안 됨</button></span>${S.clsTry&&S.cls[j]!==undefined?(S.cls[j]===CL[j][1]?'<div class="clr ok">✔ 맞아요</div>':'<div class="clr no">✘ '+CLWHY[j]+'</div>'):''}</div>`).join('')}</div>
    <button class="btn" id="clsChk" type="button">확인</button><div id="fb"></div>`:''}
   ${S.clsOk?`<h3>단톡방에 다시 알려 줄 메시지를 만드세요</h3><div class="ins">질문마다 알맞은 답을 하나씩 고르세요.</div>${S.sent?`<div class="show"><b>확실하게 알게 된 것</b><br>${esc(S.msgA)}<br><b>아직 모르는 것</b><br>${esc(S.msgB)}</div><div class="fb ok">보냈어요!</div><button class="btn red" id="next" type="button">줄리앙의 이야기 듣기 ▶</button>`:MSGUI()}`:''}
   </div></div>`;
@@ -773,7 +775,7 @@ W[3]=()=>{
   const qs=$('#qs');if(qs)qs.onclick=e=>{const b=e.target.closest('[data-j]');if(!b)return;const ok=QS[+b.dataset.j][1];if(S.firstTry.q===undefined)S.firstTry.q=!!ok;save();
     if(ok){S.q=1;save();render();}else $('#fb').innerHTML='<div class="fb no">단정하기 전에, 마리코가 그 말을 어디서 들었는지 먼저 확인해 볼까요?</div>';};
   document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const [j,v]=b.dataset.c.split('-').map(Number);S.cls[j]=v;save();render();});
-  const cc=$('#clsChk');if(cc)cc.onclick=()=>{if(CL.some((_,j)=>S.cls[j]===undefined)){$('#fb').innerHTML='<div class="fb no">다섯 문장을 모두 나눠 주세요.</div>';$('#fb').scrollIntoView({block:'center',behavior:'smooth'});return;}
+  const cc=$('#clsChk');if(cc)cc.onclick=()=>{if(CL.some((_,j)=>S.cls[j]===undefined)){document.querySelectorAll('.clrow').forEach((r,j)=>r.classList.toggle('miss',S.cls[j]===undefined));$('#fb').innerHTML='<div class="fb no">아직 고르지 않은 문장이 있어요.</div>';$('#fb').scrollIntoView({block:'center',behavior:'smooth'});return;}
     const ok=CL.every(([t,a],j)=>S.cls[j]===a);if(S.firstTry.cls===undefined)S.firstTry.cls=ok;save();
     if(ok){S.clsOk=true;S.clsTry=false;save();render();}else{S.clsTry=true;save();render();const nw=CL.filter(([t,a],j)=>S.cls[j]!==a).length;
       $('#fb').innerHTML='<div class="fb no">✘ 표시된 문장 '+nw+'개를 다시 골라 보세요. 누가 직접 말했거나 기록에 있는 것만 ‘확인됨’이에요.</div>';
