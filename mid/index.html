@@ -517,6 +517,7 @@ h3{color:var(--ink)}
 .fb.shake{animation:fbshake .35s ease}
 @keyframes fbshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @media (prefers-reduced-motion:reduce){.fb.shake{animation:none}}
+[data-p].no{border-color:#e07a6e!important;background:#fff0ed!important;color:#a3362c}
 </style>
 
 <div class="page">
@@ -834,12 +835,12 @@ W[3]=()=>{
 };
 
 const PAIRS=[
-  {id:'A',from:['staff','운영진 공지 (18:20)'],toks:['비가 내리면','결승 무대를','학생회관 2층으로','옮깁니다.'],to:['yuting','소문 (18:40)','장소 바뀌었어.'],key:0},
-  {id:'B',from:['lucas','줄리앙이 실제로 한 말'],toks:['대기실이','2층으로','바뀌었대.'],to:['yuting','마리코가 들은 말','줄리앙이 2층으로 오랬대.'],key:0}
+  {id:'A',from:['staff','운영진 공지 (18:20)'],toks:['비가 내리면','결승 무대를','학생회관 2층으로','옮깁니다.'],to:['yuting','소문 (18:40)','장소 바뀌었어.'],key:0,hint:['','‘결승 무대를’도 빠졌지만, 뜻을 바꾼 가장 중요한 말은 따로 있어요. 무엇이 빠져서 ‘이미 옮긴 것’처럼 됐을까요?','‘학생회관 2층으로’도 빠졌지만, 뜻을 바꾼 가장 중요한 말은 따로 있어요. 무엇이 빠져서 ‘이미 옮긴 것’처럼 됐을까요?','‘옮깁니다’는 ‘바뀌었어’로 남아 있어요. 어떤 조건이 사라졌는지 찾아보세요.']},
+  {id:'B',from:['lucas','줄리앙이 실제로 한 말'],toks:['대기실이','2층으로','바뀌었대.'],to:['yuting','마리코가 들은 말','줄리앙이 2층으로 오랬대.'],key:0,hint:['','‘2층으로’는 전해진 말에도 들어 있어요. 무엇이 2층으로 바뀌었는지 찾아보세요.','‘바뀌었대’는 ‘오랬대’로 바뀌어 남아 있어요. 무엇이 바뀌었는지를 말해 주는 말을 찾아보세요.']}
 ];
 V[4]=()=>{const both=PAIRS.every(p=>S.found.includes(p.id));return `<div class="layer">${S.relay?`<img class="sprite" src="${B('yuting')}" alt="">`:''}<div class="panel"><h2>${S.relay?'미션 성공!':'무엇이 빠졌을까?'}</h2>
   ${!S.relay?bub('lucas','줄리앙','저는 친구한테 “대기실이 2층으로 바뀌었대”라고만 했어요. 공연장 얘기는 안 했어요.','say'):''}
-  ${!S.relay?`<h3>말이 전해지면서 빠진 말을 하나씩 누르세요</h3>
+  ${!S.relay?`<h3>뜻이 달라지게 만든 가장 중요한 말을 하나씩 누르세요</h3>
   ${PAIRS.map(p=>`<div class="card">${bub(p.from[0],p.from[1],'<div class="toks">'+p.toks.map((t,j)=>`<button type="button" class="tok ${S.found.includes(p.id)&&j===p.key?'on':''}" data-p="${p.id}-${j}">${t}</button>`).join('')+'</div>')}${bub(p.to[0],p.to[1],p.to[2])}</div>`).join('')}
   <div id="fb">${both?'<div class="fb ok">‘비가 내리면’이 빠지자 조건이 사실이 되었고, ‘대기실이’가 빠지자 대기실 이야기가 모든 장소 이야기가 되었어요.</div>':''}</div>`:''}
   ${both&&!S.relay?`<h3>어떻게 전했어야 할까요?</h3><div class="opts" id="rl">${['대기실만 학생회관 2층으로 바뀌었대. 무대는 비가 내리면 옮기는데, 지금은 중앙광장 그대로래.','장소가 학생회관 2층으로 바뀌었대.','비가 내려서 무대를 학생회관 2층으로 옮겼대.'].map((t,j)=>`<button type="button" class="opt" data-r="${j}">${t}</button>`).join('')}</div><div id="fb2"></div>`:''}
@@ -851,7 +852,7 @@ V[4]=()=>{const both=PAIRS.every(p=>S.found.includes(p.id));return `<div class="
 W[4]=()=>{
   document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const [id,j]=b.dataset.p.split('-');const p=PAIRS.find(x=>x.id===id);
     if(+j===p.key){if(!S.found.includes(id))S.found.push(id);save();render();}
-    else $('#fb').innerHTML='<div class="fb no">그 말은 전해진 말에도 들어 있어요. 사라진 말을 찾아보세요.</div>';});
+    else{b.closest('.card').querySelectorAll('[data-p]').forEach(x=>x.classList.toggle('no',x===b));$('#fb').innerHTML='<div class="fb no shake">✘ '+((p.hint&&p.hint[+j])||'다시 찾아보세요.')+'</div>';}});
   const rl=$('#rl');if(rl)rl.onclick=e=>{const b=e.target.closest('[data-r]');if(!b)return;const j=+b.dataset.r;
     if(j===0){S.relay=true;save();render();}else $('#fb2').innerHTML=`<div class="fb no">${j===1?'무엇이 바뀌었는지가 빠졌어요.':'‘비가 내리면’은 아직 일어나지 않은 일이에요.'}</div>`;};
   const a=$('#again');if(a)a.onclick=reset;
