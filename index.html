@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>단톡방에서 나만 공지를 못 봤다</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;900&display=swap">
+<style>
+:root{--night:#0b1430;--card:#13224a;--neo:#5fd6cf;--coral:#ff7f6e;--fg:#eaf2ff;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(900px 500px at 0% -10%,#1f3d7a66,transparent 70%),radial-gradient(900px 500px at 100% 110%,#5b2d7a55,transparent 70%),var(--night);color:var(--fg);font-family:"Noto Sans KR","Malgun Gothic",sans-serif}
+main{max-width:960px;margin:0 auto;padding-block:40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+.sub{color:#bdf0ec;font-weight:700}
+h1{margin:0;font-size:clamp(28px,5vw,48px);font-weight:900;text-wrap:balance}
+img{max-width:100%;height:auto;filter:drop-shadow(0 0 22px #5fd6cf40)}
+.modes{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.modes a{display:block;min-width:220px;padding:16px 26px;border-radius:16px;background:var(--card);color:#fff;text-decoration:none;font-weight:900;font-size:22px;box-shadow:0 0 0 2px var(--neo),0 0 18px #5fd6cf55}
+.modes a small{display:block;font-weight:500;font-size:14px;color:#bdf0ec}
+.modes a:hover,.modes a:focus-visible{box-shadow:0 0 0 3px var(--coral),0 0 22px #ff7f6e88;outline:none}
+p{margin:0;color:#c9d6f2;max-width:62ch}
+</style>
+</head>
+<body>
+<main>
+  <div class="sub">누가 2층이래?</div>
+  <h1>단톡방에서 나만 공지를 못 봤다</h1>
+  <img src="lineup.webp" alt="별빛 팀 일곱 명: 린, 민수, 지아, 아리, 제이슨, 마리코, 줄리앙" width="1774" height="997">
+  <div class="modes">
+    <a href="easy/">게임 A<small>무엇이 빠졌을까?</small></a>
+    <a href="mid/">게임 B<small>누가 한 말일까?</small></a>
+  </div>
+  <p>선생님이 나눠 준 역할 카드의 QR을 찍어서 들어오세요.</p>
+</main>
+</body>
+</html>
