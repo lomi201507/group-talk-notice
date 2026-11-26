@@ -462,6 +462,11 @@ h3{color:var(--ink)}
   url(img/bg_festival.webp) center 38%/cover no-repeat,#0f1a3a!important}
 .bgm{display:inline-flex;align-items:center;gap:8px}.bgm input{width:90px;accent-color:#5fd6cf}
 #bgmBtn[aria-pressed="true"]{border-color:#5fd6cf;color:#5fd6cf}
+#tLock{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;opacity:.65;margin-left:auto;background:transparent;color:#cfe0ff;border:1.5px solid #ffffff33}
+#tLock:hover,#tLock:focus-visible{opacity:1}
+#tLock[hidden]{display:none!important}
+.tlcard input{width:100%;font-size:18px;padding:8px 12px;border:1.5px solid #c9d3ea;border-radius:10px;margin-top:2px}
+.tlcard .tlerr{min-height:20px;font-size:14px;color:#a3362c;margin:6px 0 4px;text-align:left}
 </style>
 
 <div class="page">
@@ -484,7 +489,7 @@ h3{color:var(--ink)}
       <button class="btn ghost tonly" id="cardsBtn" type="button" hidden>역할 카드 보기</button>
       <button class="btn" id="hint" type="button"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span>도움이 필요해요</span></button>
       <button class="btn ghost tonly" id="teacherBtn" type="button" hidden>교사용 결과</button>
-      <button class="btn ghost tonly" id="reset" type="button" hidden>처음부터</button>
+      <button class="btn ghost tonly" id="reset" type="button" hidden>처음부터</button><button class="btn ghost tonly" id="tOut" type="button" hidden>교사 모드 끄기</button><button class="btn ghost" id="tLock" type="button" hidden aria-label="교사 확인"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>교사</span></button>
     </div>
   </section>
 
@@ -543,7 +548,7 @@ const ROLES=[
 const RP=k=>(ROLES.find(r=>r.k===k)||ROLES[0]).p;
 /* 역할별 링크: 게임 주소 뒤에 #lin, #hao, #solongo, #aye */
 const IN_CLAUDE=!!(window.claude&&window.claude.use);
-const T_HASH='#teacher-byeolbit';
+const T_HASH='#teacher-byeolbit', T_PW='byeolbit';
 function GH_T(){if(IN_CLAUDE)return false;const ok=location.hash===T_HASH;try{if(ok)localStorage.setItem('gh_t','1');return localStorage.getItem('gh_t')==='1';}catch(e){return ok;}}
 const BASE=location.origin+location.pathname;
 const HASH={lin:'listen',hao:'doc',solongo:'field',aye:'analysis'};
@@ -837,6 +842,15 @@ function bgmStart(){try{ac=ac||new (window.AudioContext||window.webkitAudioConte
 function bgmStop(){if(!BGM)return;const b=BGM;BGM=null;clearInterval(b.timer);try{const t=ac.currentTime;b.g.gain.cancelScheduledValues(t);b.g.gain.setValueAtTime(b.g.gain.value,t);b.g.gain.linearRampToValueAtTime(0,t+1);setTimeout(()=>{try{b.g.disconnect();}catch(e){}},1300);}catch(e){}}
 $('#bgmBtn').onclick=()=>{const b=$('#bgmBtn');if(BGM){bgmStop();b.textContent='♪ 음악 켜기';b.setAttribute('aria-pressed','false');}else{bgmStart();b.textContent='■ 음악 끄기';b.setAttribute('aria-pressed','true');}};
 $('#bgmVol').oninput=()=>{if(BGM)bgmTick();};
+function setTeacher(on){try{on?localStorage.setItem('gh_t','1'):localStorage.removeItem('gh_t');}catch(e){}IS_T=on;PREV=false;if(!on){if(typeof bgmStop==='function')bgmStop();const bb=document.getElementById('bgmBtn');if(bb){bb.textContent='♪ 음악 켜기';bb.setAttribute('aria-pressed','false');}if(S.demo){S.demo=false;save();}}applyT();render();}
+$('#tLock').onclick=()=>{if($('#rsBox'))return;const d=document.createElement('div');d.id='rsBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','tlT');
+  d.innerHTML='<div class="rscard tlcard"><b id="tlT">교사 확인</b><p>선생님 비밀번호를 넣어 주세요.</p><input type="password" id="tlPw" autocomplete="off" placeholder="비밀번호"><div class="tlerr" id="tlErr" aria-live="polite"></div><div class="row"><button class="btn ghost" id="tlNo" type="button">취소</button><button class="btn" id="tlOk" type="button">확인</button></div></div>';
+  document.body.appendChild(d);const pw=d.querySelector('#tlPw'),er=d.querySelector('#tlErr');pw.focus();
+  const close=()=>{d.remove();$('#tLock').focus();};
+  const ok=()=>{const v=pw.value.trim();if(!v){er.textContent='비밀번호를 넣어 주세요.';return;}if(v!==T_PW){er.textContent='비밀번호가 달라요. 다시 넣어 주세요.';pw.select();return;}d.remove();setTeacher(true);};
+  d.querySelector('#tlOk').onclick=ok;d.querySelector('#tlNo').onclick=close;pw.oninput=()=>{er.textContent='';};
+  d.onkeydown=e=>{if(e.key==='Enter')ok();if(e.key==='Escape')close();};d.onclick=e=>{if(e.target===d)close();};};
+$('#tOut').onclick=()=>{askBox('교사 모드를 끌까요?','이 기기가 학생 화면으로 바뀌어요. 다시 켜려면 [교사] 버튼에 비밀번호를 넣으면 돼요.','교사 모드 끄기','취소',()=>setTeacher(false));};
 $('#prevBtn').onclick=()=>{PREV=true;if(S.demo){S.demo=false;save();}applyT();render();window.scrollTo(0,0);};
 $('#prevBack').onclick=()=>{PREV=false;applyT();render();};
 $('#demo').onchange=e=>{S.demo=IS_T&&e.target.checked;save();render();};
@@ -871,7 +885,7 @@ $('#copyAll').onclick=()=>{const t=ROLES.map(r=>`${r.ko} 탐정 ${P[r.p].n}: ${l
 /* ---------- 결과 보내기 (db) ---------- */
 let DB=null, USER=null, MYID=null, CAN_WRITE=null, IS_T=GH_T();
 let PREV=false;
-function applyT(){const T=IS_T&&!PREV;document.querySelectorAll('.tonly').forEach(e=>e.hidden=!T);if(!IN_CLAUDE){const tb=document.getElementById('teacherBtn');if(tb)tb.hidden=true;}const pb=document.getElementById('prevBack');if(pb)pb.hidden=!(IS_T&&PREV);if(!IS_T&&S.demo){S.demo=false;save();render();}if(IS_T&&/^#(cards|intro)$/.test(location.hash))route();}
+function applyT(){const T=IS_T&&!PREV;document.querySelectorAll('.tonly').forEach(e=>e.hidden=!T);if(!IN_CLAUDE){const tb=document.getElementById('teacherBtn');if(tb)tb.hidden=true;}const tl=document.getElementById('tLock');if(tl)tl.hidden=IN_CLAUDE||IS_T;const pb=document.getElementById('prevBack');if(pb)pb.hidden=!(IS_T&&PREV);if(!IS_T&&S.demo){S.demo=false;save();render();}if(IS_T&&/^#(cards|intro)$/.test(location.hash))route();}
 (async()=>{try{
   if(!window.claude||!window.claude.use)return;
   DB=await window.claude.use('db'); USER=await window.claude.use('user');
