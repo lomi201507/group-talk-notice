@@ -485,6 +485,11 @@ h3{color:var(--ink)}
 .title .sub{font-size:clamp(18px,2.2vw,24px)!important}
 .title .goal{padding:5px 16px!important;font-size:clamp(14px,1.5vw,17px)!important;line-height:1.5}
 .title .btn{padding:8px 40px!important}
+.m2head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.m2head #myClue{font-size:15px;padding:6px 14px}
+.mccard{width:min(720px,94vw);max-height:86vh;display:flex;flex-direction:column;text-align:left}
+.mccard>b{text-align:center}
+.mccard .mcbody{overflow:auto;display:flex;flex-direction:column;gap:12px;margin:10px 0 14px;padding-right:4px}
 </style>
 
 <div class="page">
@@ -770,7 +775,7 @@ function wireMsg(fill){document.querySelectorAll('[data-ms]').forEach(b=>b.oncli
     if(S.mf[i]===undefined)S.mf[i]=j;S.mp[i]=j;save();render();});
   const sd=$('#send');if(sd)sd.onclick=()=>{fill();S.sent=true;save();render();};}
 function msgFirstWrong(){const mf=S.mf||{};return MSLOT.map((x,i)=>mf[i]!=null&&!x.o[mf[i]][1]?x.o[mf[i]][0]:null).filter(Boolean);}
-V[3]=()=>`<div class="layer"><div class="panel"><h2>미션 2 · 확인된 것과 확인되지 않은 것</h2>
+V[3]=()=>`<div class="layer"><div class="panel"><div class="m2head"><h2>미션 2 · 확인된 것과 확인되지 않은 것</h2><button class="btn ghost" id="myClue" type="button">내 단서 다시 보기</button></div>
   ${bub('yuting','','줄리앙이 2층으로 오랬어요. 줄리앙이 잘못 전한 거예요!','say')}
   ${bub('lucas','','…저 그런 말 안 했는데요.')}
   ${!S.q?`<h3>마리코에게 무엇을 확인할까요?</h3><div class="opts" id="qs">${QS.map(([t],j)=>`<button type="button" class="opt" data-j="${j}">${t}</button>`).join('')}</div><div id="fb"></div>`:
@@ -1000,6 +1005,15 @@ function showIntro(on){$('#intro').hidden=!on;if(on){introPage(false);document.q
 $('#toRules').onclick=()=>introPage(true);$('#toStory').onclick=()=>introPage(false);
 $('#introBtn').onclick=()=>{location.hash='intro';};
 $('#introBack').onclick=()=>{location.hash='';showIntro(false);showCards(false);render();};
+/* 미션 2: 내 단서 다시 보기 (창으로 보기, 진행은 그대로) */
+function openMyClue(){if($('#rsBox'))return;const keys=[S.role].concat(S.extra||[]).filter(Boolean);
+  const body=keys.map(k=>k==='listen'?`<div class="card rk" style="border-color:${COLOR.listen}"><h3 class="ch">${propBadge('listen',36)} 린의 헤드폰 · 음성 단서</h3><div>음성은 다시 들을 수 없어요. 들은 내용을 팀원과 함께 확인해 보세요.</div></div>`:clueHTML(k)).join('');
+  const d=document.createElement('div');d.id='rsBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','mcT');
+  d.innerHTML='<div class="rscard mccard"><b id="mcT">내 단서</b><div class="mcbody">'+body+'</div><div class="row"><button class="btn" id="mcClose" type="button">닫기</button></div></div>';
+  d.querySelectorAll('.mcbody button').forEach(b=>{b.disabled=true;});
+  document.body.appendChild(d);const c=d.querySelector('#mcClose');c.focus();
+  const close=()=>{d.remove();const b=$('#myClue');if(b)b.focus();};c.onclick=close;d.onclick=e=>{if(e.target===d)close();};d.onkeydown=e=>{if(e.key==='Escape')close();};}
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#myClue'))openMyClue();});
 function askBox(title,text,yes,no,onYes,onNo){if($('#rsBox'))$('#rsBox').remove();const d=document.createElement('div');d.id='rsBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');
   d.innerHTML='<div class="rscard"><b></b><p></p><div class="row"><button class="btn red" id="abYes" type="button"></button><button class="btn ghost" id="abNo" type="button"></button></div></div>';
   d.querySelector('b').textContent=title;d.querySelector('p').textContent=text;d.querySelector('#abYes').textContent=yes;d.querySelector('#abNo').textContent=no;
