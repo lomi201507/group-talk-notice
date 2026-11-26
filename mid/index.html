@@ -616,11 +616,14 @@ function music(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)
     o.connect(g).connect(lp);o.start(s);o.stop(s+BAR+1.1);os.push(o);});}
   MUS={m,os};}catch(e){MUS=null;}}
 function stopMusic(fade){if(!MUS)return;const {m,os}=MUS;MUS=null;try{const t=ac.currentTime;m.gain.cancelScheduledValues(t);m.gain.setValueAtTime(m.gain.value,t);m.gain.linearRampToValueAtTime(0,t+fade);setTimeout(()=>os.forEach(o=>{try{o.stop();}catch(e){}}),fade*1000+100);}catch(e){}}
+let AUD=null;
+function speakFallback(lines,rate,onend){try{speechSynthesis.cancel();lines.forEach((t,i)=>{const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=rate;u.pitch=VPITCH;const ko=speechSynthesis.getVoices().find(v=>/^ko/i.test(v.lang));if(ko)u.voice=ko;if(i===lines.length-1){u.onend=onend;u.onerror=onend;}speechSynthesis.speak(u);});}catch(e){onend();}}
 function speakLines(lines,rate,onend){
+  if(!TTS&&!IN_CLAUDE){try{AUD=new Audio('voice.wav');AUD.preload='auto';AUD.onended=onend;let fell=false;const fb=()=>{if(fell)return;fell=true;AUD=null;speakFallback(lines,rate,onend);};AUD.onerror=fb;const pr=AUD.play();if(pr&&pr.catch)pr.catch(fb);return;}catch(e){}}
   if(TTS){TTS.speak(lines.map(text=>({text,language:'ko'})),{voice:VVOICE,rate,language:'ko'}).then(onend,err=>{if(err&&err.code==='not_granted'){TTS_OFF=true;}onend();});return;}
   try{speechSynthesis.cancel();lines.forEach((t,i)=>{const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=rate;u.pitch=VPITCH;if(i===lines.length-1){u.onend=onend;u.onerror=onend;}speechSynthesis.speak(u);});}catch(e){onend();}}
 let PLAYING=false, PTIMER=null, EARASK=false;
-function stopVoice(){PLAYID++;try{TTS&&TTS.stop();}catch(e){}try{speechSynthesis.cancel();}catch(e){}stopMusic(.5);clearTimeout(PTIMER);if(PLAYING){PLAYING=false;if(S.sc===1)render();}}
+function stopVoice(){PLAYID++;try{if(AUD){AUD.onended=null;AUD.onerror=null;AUD.pause();AUD=null;}}catch(e){}try{TTS&&TTS.stop();}catch(e){}try{speechSynthesis.cancel();}catch(e){}stopMusic(.5);clearTimeout(PTIMER);if(PLAYING){PLAYING=false;if(S.sc===1)render();}}
 function playVoice(kind){
   stopVoice();if(TTS_OFF){render();return;}PLAYING=true;const id=PLAYID;
   const end=()=>{if(id!==PLAYID||!PLAYING)return;PLAYING=false;clearTimeout(PTIMER);stopMusic(2);if(S.sc===1)render();};
