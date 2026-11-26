@@ -529,7 +529,7 @@ const RP=k=>(ROLES.find(r=>r.k===k)||ROLES[0]).p;
 /* 역할별 링크: 게임 주소 뒤에 #lin, #hao, #solongo, #aye */
 const IN_CLAUDE=!!(window.claude&&window.claude.use);
 function GH_T(){if(IN_CLAUDE)return false;const ok=location.hash==='#teacher-byeolbit';try{if(ok)sessionStorage.setItem('gh_t','1');return sessionStorage.getItem('gh_t')==='1';}catch(e){return ok;}}
-const BASE=IN_CLAUDE?'https://claude.ai/artifact/HRSBwVuDUAcXspWynkz6Az':location.origin+location.pathname;
+const BASE=location.origin+location.pathname;
 const HASH={lin:'listen',hao:'doc',solongo:'field',aye:'analysis'};
 const HASH_OF={listen:'lin',doc:'hao',field:'solongo',analysis:'aye'};
 const TASK={listen:'이어폰을 끼고 운영진 음성 메시지를 들어요.',doc:'제이슨의 공지와 축제 포스터를 읽어요.',field:'캠퍼스 안내판 사진을 살펴봐요.',analysis:'지워진 메시지와 단톡방 참여 기록을 살펴봐요.'};
