@@ -796,7 +796,7 @@ V[4]=()=>{const both=PAIRS.every(p=>S.found.includes(p.id));return `<div class="
   <div id="fb">${both?'<div class="fb ok">‘비가 내리면’이 빠지자 조건이 사실이 되었고, ‘대기실이’가 빠지자 대기실 이야기가 모든 장소 이야기가 되었어요.</div>':''}</div>`:''}
   ${both&&!S.relay?`<h3>어떻게 전했어야 할까요?</h3><div class="opts" id="rl">${['대기실만 학생회관 2층으로 바뀌었대. 무대는 비가 내리면 옮기는데, 지금은 중앙광장 그대로래.','장소가 학생회관 2층으로 바뀌었대.','비가 내려서 무대를 학생회관 2층으로 옮겼대.'].map((t,j)=>`<button type="button" class="opt" data-r="${j}">${t}</button>`).join('')}</div><div id="fb2"></div>`:''}
   ${S.relay?`${bub('yuting','','줄리앙 씨, 미안해요. 직접 들은 것도 아닌데 “줄리앙이 2층으로 오래.”, “장소 바뀌었대.”라고 사실처럼 전했어요.','say')}${bub('lucas','','괜찮아요. 저도 앞으로 ‘대기실이’라고 더 분명하게 말할게요.','say')}${bub('jayden','','좋아, 다 같이 중앙광장으로 가자!','say')}
-   <div class="rule">전해 들은 말은 ‘-대요’로, 확인된 것과 확인되지 않은 것은 나눠서 말해요.</div>
+   <div class="rule">전해 들은 말은 ‘-대요’로, 확인된 것과 확인되지 않은 것은 구별해서 말해요.</div>
    ${sendBox()}
    <button class="btn ghost" id="again" type="button">처음부터 다시</button>`:''}
   </div>${S.relay?`<img class="sprite" src="${B('lucas')}" alt="">`:''}</div>`;};
