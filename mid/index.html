@@ -548,7 +548,7 @@ const ROLES=[
 const RP=k=>(ROLES.find(r=>r.k===k)||ROLES[0]).p;
 /* 역할별 링크: 게임 주소 뒤에 #lin, #hao, #solongo, #aye */
 const IN_CLAUDE=!!(window.claude&&window.claude.use);
-const T_HASH='#teacher-byeolbit', T_PW='byeolbit';
+const T_HASH='#teacher-byeolbit', T_PW='1018';
 function GH_T(){if(IN_CLAUDE)return false;const ok=location.hash===T_HASH;try{if(ok)localStorage.setItem('gh_t','1');return localStorage.getItem('gh_t')==='1';}catch(e){return ok;}}
 const BASE=location.origin+location.pathname;
 const HASH={lin:'listen',hao:'doc',solongo:'field',aye:'analysis'};
@@ -844,7 +844,7 @@ $('#bgmBtn').onclick=()=>{const b=$('#bgmBtn');if(BGM){bgmStop();b.textContent='
 $('#bgmVol').oninput=()=>{if(BGM)bgmTick();};
 function setTeacher(on){try{on?localStorage.setItem('gh_t','1'):localStorage.removeItem('gh_t');}catch(e){}IS_T=on;PREV=false;if(!on){if(typeof bgmStop==='function')bgmStop();const bb=document.getElementById('bgmBtn');if(bb){bb.textContent='♪ 음악 켜기';bb.setAttribute('aria-pressed','false');}if(S.demo){S.demo=false;save();}}applyT();render();}
 $('#tLock').onclick=()=>{if($('#rsBox'))return;const d=document.createElement('div');d.id='rsBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','tlT');
-  d.innerHTML='<div class="rscard tlcard"><b id="tlT">교사 확인</b><p>선생님 비밀번호를 넣어 주세요.</p><input type="password" id="tlPw" autocomplete="off" placeholder="비밀번호"><div class="tlerr" id="tlErr" aria-live="polite"></div><div class="row"><button class="btn ghost" id="tlNo" type="button">취소</button><button class="btn" id="tlOk" type="button">확인</button></div></div>';
+  d.innerHTML='<div class="rscard tlcard"><b id="tlT">교사 확인</b><p>선생님 비밀번호를 넣어 주세요.</p><input type="password" id="tlPw" autocomplete="off" inputmode="numeric" placeholder="비밀번호 숫자 4자리"><div class="tlerr" id="tlErr" aria-live="polite"></div><div class="row"><button class="btn ghost" id="tlNo" type="button">취소</button><button class="btn" id="tlOk" type="button">확인</button></div></div>';
   document.body.appendChild(d);const pw=d.querySelector('#tlPw'),er=d.querySelector('#tlErr');pw.focus();
   const close=()=>{d.remove();$('#tLock').focus();};
   const ok=()=>{const v=pw.value.trim();if(!v){er.textContent='비밀번호를 넣어 주세요.';return;}if(v!==T_PW){er.textContent='비밀번호가 달라요. 다시 넣어 주세요.';pw.select();return;}d.remove();setTeacher(true);};
