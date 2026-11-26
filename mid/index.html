@@ -467,6 +467,11 @@ h3{color:var(--ink)}
 #tLock[hidden]{display:none!important}
 .tlcard input{width:100%;font-size:18px;padding:8px 12px;border:1.5px solid #c9d3ea;border-radius:10px;margin-top:2px}
 .tlcard .tlerr{min-height:20px;font-size:14px;color:#a3362c;margin:6px 0 4px;text-align:left}
+.mslot{background:#fff;border:1.5px solid #dfe6f3;border-radius:16px;padding:12px 14px 14px;margin-bottom:12px;box-shadow:0 4px 14px #1d27470d}
+.mslot h4{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:17px;flex-wrap:wrap}
+.mslot .qtag{background:#eaf1ff;color:#2f5fc4;border-radius:8px;padding:3px 10px;font-size:14px;font-weight:800;white-space:nowrap}
+.mslot .wopt{display:flex;gap:10px;align-items:flex-start;background:#f8faff}
+.mslot .onum{color:#2f5fc4;font-weight:800;min-width:22px;flex:none}
 </style>
 
 <div class="page">
@@ -740,8 +745,9 @@ const RXB={l:/줄리앙/,u:/(모르|몰라|확인|아직|직접)/};
 const MSLOT=[{"h": "질문 1. 확실하게 알게 된 것은 뭐예요?", "o": [["무대는 중앙광장 그대로고, 대기실만 학생회관 2층으로 바뀌었어요.", 0, "내용은 맞지만 <b>누가 한 말인지</b>가 없어요. ‘김 선생님이 ~대요’로 전해요."], ["김 선생님이 무대는 중앙광장 그대로고, 대기실만 학생회관 2층으로 바뀌었대요.", 1, ""], ["김 선생님이 비가 와서 무대를 학생회관 2층으로 옮기고, 대기실도 같이 바꿨대요.", 0, "비가 <b>안 와서</b> 무대는 그대로예요."]]}, {"h": "질문 2. 아직 모르는 것은 뭐예요?", "o": [["줄리앙 씨가 공연장이 2층이라고 잘못 전한 게 확실해요.", 0, "줄리앙이 그렇게 말했는지 <b>아직 몰라요</b>. 단정하면 안 돼요."], ["줄리앙 씨가 공연장이 2층이라고 했는지는 아직 확인되지 않았어요.", 1, ""], ["마리코 씨가 줄리앙 씨한테 직접 “2층으로 와.”라는 말을 들었대요.", 0, "마리코는 <b>다른 팀 친구</b>한테 들었어요. 직접 들은 게 아니에요."]]}];
 function MSGUI(){S.mp=S.mp||{};const all=MSLOT.every((x,i)=>S.mp[i]!=null&&x.o[S.mp[i]][1]);
   return MSLOT.map((x,i)=>{const pk=S.mp[i],ok=pk!=null&&x.o[pk][1];
-    return `<div class="mslot"><h4>${x.h}</h4>${ok?`<div class="fb ok">✔ ${esc(x.o[pk][0])}</div>`:
-      `<div class="wopts">${x.o.map((o,j)=>`<button type="button" class="wopt${pk===j?' no':''}" data-ms="${i}-${j}">${esc(o[0])}</button>`).join('')}</div>${pk!=null?`<div class="fb no">${x.o[pk][2]} 다시 골라 보세요.</div>`:''}`}</div>`;}).join('')+
+    const NUM='①②③④⑤',hm=x.h.match(/^질문\s*(\d+)\.\s*(.*)$/),hh=hm?`<span class="qtag">질문 ${hm[1]}</span><span>${hm[2]}</span>`:x.h;
+    return `<div class="mslot"><h4>${hh}</h4>${ok?`<div class="fb ok">✔ ${NUM[pk]} ${esc(x.o[pk][0])}</div>`:
+      `<div class="wopts">${x.o.map((o,j)=>`<button type="button" class="wopt${pk===j?' no':''}" data-ms="${i}-${j}"><span class="onum">${NUM[j]}</span><span>${esc(o[0])}</span></button>`).join('')}</div>${pk!=null?`<div class="fb no">${x.o[pk][2]} 다시 골라 보세요.</div>`:''}`}</div>`;}).join('')+
    (all?`<div class="show"><b>보낼 메시지</b><br>${esc(MSLOT.map((x,i)=>x.o[S.mp[i]][0]).join(' '))}</div><button class="btn red" id="send" type="button">보내기</button>`:'');}
 function wireMsg(fill){document.querySelectorAll('[data-ms]').forEach(b=>b.onclick=()=>{const [i,j]=b.dataset.ms.split('-').map(Number);S.mp=S.mp||{};S.mf=S.mf||{};
     if(S.mf[i]===undefined)S.mf[i]=j;S.mp[i]=j;save();render();});
@@ -754,7 +760,7 @@ V[3]=()=>`<div class="layer"><div class="panel"><h2>미션 2 · 확인된 것과
    bub('yuting','','직접은 아니에요… 지나가다가 다른 팀 친구가 “줄리앙이 2층으로 오래”라고 하는 걸 들었어요. ‘공연장’이라고 했는지는 잘 모르겠어요.','say')}
   ${S.q&&!S.clsOk?`<h3>지금까지의 말을 나눠 보세요</h3><div class="cls">${CL.map(([t],j)=>`<div class="clrow"><span>${t}</span><span class="opts"><button type="button" class="opt" data-c="${j}-1" aria-pressed="${S.cls[j]===1}">확인됨</button><button type="button" class="opt" data-c="${j}-0" aria-pressed="${S.cls[j]===0}">확인 안 됨</button></span></div>`).join('')}</div>
    <button class="btn" id="clsChk" type="button">확인</button><div id="fb"></div>`:''}
-  ${S.clsOk?`<h3>단톡방에 다시 알려 줄 메시지를 만드세요</h3><div class="ins">질문마다 알맞은 문장을 하나씩 고르세요.</div>${S.sent?`<div class="show"><b>확실하게 알게 된 것</b><br>${esc(S.msgA)}<br><b>아직 모르는 것</b><br>${esc(S.msgB)}</div><div class="fb ok">보냈어요!</div><button class="btn red" id="next" type="button">줄리앙의 이야기 듣기 ▶</button>`:MSGUI()}`:''}
+  ${S.clsOk?`<h3>단톡방에 다시 알려 줄 메시지를 만드세요</h3><div class="ins">질문마다 알맞은 답을 하나씩 고르세요.</div>${S.sent?`<div class="show"><b>확실하게 알게 된 것</b><br>${esc(S.msgA)}<br><b>아직 모르는 것</b><br>${esc(S.msgB)}</div><div class="fb ok">보냈어요!</div><button class="btn red" id="next" type="button">줄리앙의 이야기 듣기 ▶</button>`:MSGUI()}`:''}
   </div></div>`;
 W[3]=()=>{
   const qs=$('#qs');if(qs)qs.onclick=e=>{const b=e.target.closest('[data-j]');if(!b)return;const ok=QS[+b.dataset.j][1];if(S.firstTry.q===undefined)S.firstTry.q=!!ok;save();
