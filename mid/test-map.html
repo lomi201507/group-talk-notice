@@ -566,7 +566,7 @@ h3{color:var(--ink)}
 .cmtabs button{border:2px solid #d3dcee;background:#fff;border-radius:12px;padding:8px 10px;font-weight:800;font-size:16px;color:#16224a;text-align:left}
 .cmtabs button small{display:block;font-size:12.5px;font-weight:700;color:#3d7bf0}
 .cmtabs button[aria-selected="true"]{border-color:#16224a;background:#16224a;color:#fff}.cmtabs button[aria-selected="true"] small{color:#5fd6cf}
-.cmsvg{width:100%;height:auto;display:block;border-radius:18px;box-shadow:0 0 0 2px #5fd6cf66}
+.cmsvg{width:100%;max-height:300px;height:auto;display:block;margin:0 auto;border-radius:18px;box-shadow:0 0 0 2px #5fd6cf66}
 .cmsvg .cb{cursor:pointer}.cmsvg .cb:hover>*:first-child,.cmsvg .cb:focus-visible>*:first-child{filter:brightness(1.08)}
 .cmsvg .cb:focus{outline:none}
 .cmsvg .cbn{font-size:22px;font-weight:900;fill:#16224a}.cmsvg .cbf{font-size:14px;font-weight:800;fill:#fff}
@@ -969,8 +969,9 @@ function CMAP(){const mode=S.mapMode||(S.w&&!S.s?'s':'w');
   ${b}</svg>
   <div class="cmhelp">${mode==='w'?'🚪 결승팀이 <b>기다리는 곳</b>을 지도에서 누르세요.':'🎤 결승 <b>공연을 하는 곳</b>을 지도에서 누르세요.'}</div></div>`;}
 function wireMap(){const m=$('#cmap');if(!m)return;
-  m.querySelectorAll('[data-mm]').forEach(b=>b.onclick=()=>{S.mapMode=b.dataset.mm;save();render();});
-  const pick=g=>{const n=g.dataset.n,mode=S.mapMode||(S.w&&!S.s?'s':'w');if(mode==='w'){S.w=n;if(!S.s)S.mapMode='s';}else{S.s=n;}save();render();};
+  const redraw=()=>{save();const o=$('#cmap');if(o){o.outerHTML=CMAP();wireMap();}};
+  m.querySelectorAll('[data-mm]').forEach(b=>b.onclick=()=>{S.mapMode=b.dataset.mm;redraw();});
+  const pick=g=>{const n=g.dataset.n,mode=S.mapMode||(S.w&&!S.s?'s':'w');if(mode==='w'){S.w=n;if(!S.s)S.mapMode='s';}else{S.s=n;}redraw();};
   m.querySelectorAll('.cb').forEach(g=>{g.onclick=()=>pick(g);g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(g);}};});}
 function go(n){S.sc=n;save();render();}
 function render(){
