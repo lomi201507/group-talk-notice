@@ -670,6 +670,7 @@ function tickTimer(){const box=document.getElementById('tp');if(!box)return;box.
   const t=leftSec();box.className='tpill'+(t===0?' over':t<=180?' hurry':'');l.textContent=t===0?'시간 초과! 서둘러요':'결승까지 남은 시간';v.textContent=mmss(t);}
 setInterval(tickTimer,1000);
 const fresh=()=>({team:'',sentOk:false,t0:0,m1Left:null,sc:0,role:'',extra:[],fromLink:false,demo:false,plays:0,m1tries:0,wtxt:{},wOk:{},wHint:{},w:'',s:'',m1:false,q:0,cls:{},clsOk:false,msgA:'',msgB:'',msg:'',sent:false,found:[],relay:false,firstTry:{}});
+if(/[?&]start/.test(location.search)){try{localStorage.removeItem(KEY);}catch(e){}try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
 let S=fresh(); try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S=Object.assign(fresh(),s);}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=s=>document.querySelector(s);
