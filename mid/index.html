@@ -977,7 +977,7 @@ async function loadBoard(){try{const r=await fetch(GAS_URL+'?t='+Date.now());con
 function drawBoard(){const teams={};BOARD_ROWS.forEach(r=>{(teams[r.team]=teams[r.team]||[]).push(r);});
   const T=Object.keys(teams).map(t=>{const m=teams[t];const steps=m.map(x=>x.step);const st=BOARD_MODE==='all'?Math.min(...steps):Math.max(...steps);
     const done=m.length>0&&m.every(x=>x.done);const wrong=m.reduce((a,x)=>a+x.wrong,0),hints=m.reduce((a,x)=>a+x.hints,0);
-    const doneT=done?Math.max(...m.map(x=>+x.t||0)):Infinity;return {t,m,st,done,wrong,hints,doneT};});
+    const doneT=done?Math.max(...m.map(x=>new Date(isNaN(+x.t)?x.t:+x.t).getTime()||0)):Infinity;return {t,m,st,done,wrong,hints,doneT};});
   T.sort((a,b)=>(b.st-a.st)||(a.doneT-b.doneT)||(a.wrong-b.wrong)||(+a.t-+b.t));
   const students=BOARD_ROWS.length,fin=T.filter(x=>x.done).length;
   $('#bSum').innerHTML=`<span><b>${T.length}</b> 참여 팀</span><span><b>${students}</b> 참여 학생</span><span><b>${fin}</b> 완료 팀</span>`;
