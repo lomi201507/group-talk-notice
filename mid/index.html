@@ -559,6 +559,21 @@ h3{color:var(--ink)}
 .pchead b{display:block;font-size:18px;color:var(--navy)}.pchead span{font-size:14px;color:var(--soft)}
 .pcw{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:16px}.pcw img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none}
 .pcq .wopt:disabled{opacity:.5;cursor:not-allowed}
+
+/* 미션 1 캠퍼스 지도 */
+.cmap{display:flex;flex-direction:column;gap:8px}
+.cmtabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmtabs button{border:2px solid #d3dcee;background:#fff;border-radius:12px;padding:8px 10px;font-weight:800;font-size:16px;color:#16224a;text-align:left}
+.cmtabs button small{display:block;font-size:12.5px;font-weight:700;color:#3d7bf0}
+.cmtabs button[aria-selected="true"]{border-color:#16224a;background:#16224a;color:#fff}.cmtabs button[aria-selected="true"] small{color:#5fd6cf}
+.cmsvg{width:min(100%,533px);max-height:300px;height:auto;display:block;margin:0 auto;border-radius:18px;box-shadow:0 0 0 2px #5fd6cf66}
+.cmsvg .cb{cursor:pointer}.cmsvg .cb:hover>*:first-child,.cmsvg .cb:focus-visible>*:first-child{filter:brightness(1.08)}
+.cmsvg .cb:focus{outline:none}
+.cmsvg .cbn{font-size:22px;font-weight:900;fill:#16224a}.cmsvg .cbf{font-size:14px;font-weight:800;fill:#fff}
+@media (prefers-reduced-motion:no-preference){.cmsvg .pin{animation:pinDrop .35s cubic-bezier(.3,1.6,.5,1)}}
+@keyframes pinDrop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.cmteam{background:#fff8dc;border-left:6px solid #f2b600;border-radius:12px;padding:8px 12px;font-size:15.5px;color:#1d2747}.cmteam b{color:#16224a}
+.cmhelp{font-size:15px;color:var(--soft)}.cmhelp b{color:#16224a}
 </style>
 
 <div class="page">
@@ -817,12 +832,11 @@ W[1]=()=>{wireMissions();document.querySelectorAll('[data-x]').forEach(b=>b.oncl
 const BLD=[['학생회관 2층','#f0c3b8'],['중앙광장','#f2d89a'],['본관 2층','#d6d0ef'],['도서관 2층','#c9d6e8']];
 V[2]=()=>`<div class="layer"><div class="panel"><h2>미션 1 · 지금 어디로 가야 할까?</h2>${pcHTML()}
   <div class="tip"><b>물어보기</b> “그건 언제 나온 말이에요?” “비가 오면 옮긴다는 거예요, 벌써 옮겼다는 거예요?” “직접 들었어요?”</div>
-  <h3>대기 장소는?</h3><div class="map" id="mw">${BLD.map(([n,c])=>`<button type="button" class="bld" data-n="${n}" style="background:${c}" aria-pressed="${S.w===n}">${n}</button>`).join('')}</div>
-  <h3>결승 무대는?</h3><div class="map" id="ms">${BLD.map(([n,c])=>`<button type="button" class="bld" data-n="${n}" style="background:${c}" aria-pressed="${S.s===n}">${n}</button>`).join('')}</div>
+  ${CMAP()}<div id="mw" hidden></div><div id="ms" hidden></div>
   <div id="fb">${S.m1?'<div class="fb ok">맞아요! 비가 안 와서 무대는 중앙광장 그대로예요. 대기실만 학생회관 2층이에요.</div>':''}</div>
   <div class="row"><button class="btn ghost" id="back" type="button">◀ 내 단서 다시 보기</button>${S.m1?'<button class="btn red" id="next" type="button">대기실 도착 ▶ 미션 2</button>':'<button class="btn red" id="chk" type="button">이곳으로 출발!</button>'}</div>
   </div></div>`;
-W[2]=()=>{wirePC();
+W[2]=()=>{wirePC();wireMap();
   $('#mw').onclick=e=>{const b=e.target.closest('.bld');if(!b)return;S.w=b.dataset.n;save();render();};
   $('#ms').onclick=e=>{const b=e.target.closest('.bld');if(!b)return;S.s=b.dataset.n;save();render();};
   $('#back').onclick=()=>go(1);
@@ -833,7 +847,7 @@ W[2]=()=>{wirePC();
     else if(S.s!=='중앙광장')m='원래 결승 무대가 어디인지 민수(문서 탐정)에게 물어보세요.';
     else if(S.w!=='학생회관 2층')m=`${S.w}? 대기실이 어느 건물인지 지아(현장 탐정)에게 물어보세요.`;
     if(S.firstTry.m1===undefined)S.firstTry.m1=!m;
-    if(m){S.m1tries=(S.m1tries||0)+1;S.m1Lock=Date.now()+15000;$('#fb').innerHTML=`<div class="fb no">${esc(m)}<br>15초 동안 팀원과 다시 이야기한 뒤 출발할 수 있어요.${S.m1tries>=3?'<br>세 번 틀렸어요. 손을 들어 선생님께 도움을 요청하세요.':''}</div>`;save();pcTimer();return;}
+    if(m){S.m1tries=(S.m1tries||0)+1;$('#fb').innerHTML=`<div class="fb no">${esc(m)}${S.m1tries>=3?'<br>세 번 틀렸어요. 손을 들어 선생님께 도움을 요청하세요.':''}</div>`;save();pcTimer();return;}
     S.m1=true;S.m1Left=leftSec();save();render();};
 };
 
@@ -933,8 +947,33 @@ function wirePC(){
   document.querySelectorAll('[data-pc]').forEach(b=>b.onclick=()=>{const i=b.dataset.pc.lastIndexOf('-'),k=b.dataset.pc.slice(0,i),o=pcOpts(k)[+b.dataset.pc.slice(i+1)];if(!o)return;
     S.pcOk=S.pcOk||{};S.pcFirst=S.pcFirst||{};S.pcLock=S.pcLock||{};if(S.pcFirst[k]===undefined)S.pcFirst[k]=!!o.ok;
     if(o.ok)S.pcOk[k]=true;else{S.pcWrong=(S.pcWrong||0)+1;S.pcLock[k]=Date.now()+10000;}save();render();});
-  if(!pcDone()){['#mw','#ms'].forEach(id=>{const e=$(id);if(!e)return;e.hidden=true;const h=e.previousElementSibling;if(h&&h.tagName==='H3')h.hidden=true;});const c=$('#chk');if(c)c.hidden=true;}
+  if(!pcDone()){const cm=$('#cmap');if(cm)cm.hidden=true;['#mw','#ms'].forEach(id=>{const e=$(id);if(!e)return;e.hidden=true;const h=e.previousElementSibling;if(h&&h.tagName==='H3')h.hidden=true;});const c=$('#chk');if(c)c.hidden=true;}
   pcTimer();}
+
+/* ---------- 미션 1: 캠퍼스 지도에서 고르기 ---------- */
+const MAPPOS=[{x:28,y:206,w:200,h:124,ic:'hall'},{x:250,y:150,w:140,h:130,ic:'plaza'},{x:28,y:26,w:200,h:112,ic:'main'},{x:412,y:26,w:200,h:112,ic:'lib'}];
+function CMAP(){const mode=S.mapMode||(S.w&&!S.s?'s':'w');
+  const nm=n=>{const m=n.match(/^(.*?)\s*(\d층)$/);return m?[m[1],m[2]]:[n,''];};
+  const win=(x,y,w,h)=>{let o='';for(let r=0;r<2;r++)for(let c=0;c<5;c++)o+=`<rect x="${x+18+c*((w-36)/5)}" y="${y+50+r*22}" width="${(w-36)/5-8}" height="12" rx="2" fill="#0f1a3a" opacity=".22"/>`;return o;};
+  const b=BLD.map(([n,c],i)=>{const p=MAPPOS[/학생회관/.test(n)?0:/본관/.test(n)?2:/도서관/.test(n)?3:1],[base,fl]=nm(n),isW=S.w===n,isS=S.s===n;
+    const shape=p.ic==='plaza'&&!/광장/.test(n)?`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="20" fill="${c}" stroke="#fff" stroke-width="${isW||isS?5:2}"/><path d="M${p.x+40} ${p.y+92} q30 -34 60 0" fill="none" stroke="#0f1a3a" stroke-width="5" opacity=".35"/>`:p.ic==='plaza'?`<ellipse cx="${p.x+p.w/2}" cy="${p.y+p.h/2}" rx="${p.w/2}" ry="${p.h/2}" fill="${c}" stroke="#fff" stroke-width="${isW||isS?5:2}"/><path d="M${p.x+40} ${p.y+82} q30 -34 60 0" fill="none" stroke="#0f1a3a" stroke-width="5" opacity=".35"/><rect x="${p.x+38}" y="${p.y+82}" width="64" height="10" rx="3" fill="#0f1a3a" opacity=".35"/>`
+      :`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="14" fill="${c}" stroke="#fff" stroke-width="${isW||isS?5:2}"/>${win(p.x,p.y,p.w,p.h)}`;
+    const cx=p.x+p.w/2,ty=p.ic==='plaza'?p.y+46:p.y+30;
+    const pins=(isW?`<g class="pin pw"><circle cx="${cx-(isS?26:0)}" cy="${p.y-6}" r="20" fill="#ff7f6e" stroke="#fff" stroke-width="3"/><text x="${cx-(isS?26:0)}" y="${p.y+1}" text-anchor="middle" font-size="20">🚪</text></g>`:'')+
+               (isS?`<g class="pin ps"><circle cx="${cx+(isW?26:0)}" cy="${p.y-6}" r="20" fill="#5fd6cf" stroke="#fff" stroke-width="3"/><text x="${cx+(isW?26:0)}" y="${p.y+1}" text-anchor="middle" font-size="20">🎤</text></g>`:'');
+    return `<g class="cb" data-n="${esc(n)}" role="button" tabindex="0" aria-label="${esc(n)}">${shape}<text x="${cx}" y="${ty}" text-anchor="middle" class="cbn">${esc(base)}</text>${fl?`<g><rect x="${cx-24}" y="${ty+8}" width="48" height="22" rx="11" fill="#16224a"/><text x="${cx}" y="${ty+24}" text-anchor="middle" class="cbf">${fl}</text></g>`:''}${pins}</g>`;}).join('');
+  return `<div class="cmap" id="cmap"><div class="cmteam">👥 <b>팀원과 이야기해서 함께 정하세요.</b> 왜 그곳인지 한 사람씩 말해 보세요.</div><div class="cmtabs" role="tablist"><button type="button" role="tab" data-mm="w" aria-selected="${mode==='w'}">🚪 대기 장소 고르기${S.w?` <small>${esc(S.w)}</small>`:''}</button><button type="button" role="tab" data-mm="s" aria-selected="${mode==='s'}">🎤 결승 무대 고르기${S.s?` <small>${esc(S.s)}</small>`:''}</button></div>
+  <svg viewBox="0 0 640 360" class="cmsvg" aria-label="캠퍼스 지도"><rect width="640" height="360" rx="18" fill="#13224a"/>
+  <path d="M0 180 H640 M320 0 V360" stroke="#2c4a86" stroke-width="26" opacity=".7"/><path d="M0 180 H640 M320 0 V360" stroke="#5fd6cf" stroke-width="1.5" stroke-dasharray="6 8" opacity=".5"/>
+  ${[[460,222],[540,214],[612,236],[262,332],[392,332],[612,140]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="13" fill="#2f6b4a"/><circle cx="${x}" cy="${y}" r="6" fill="#3f8a5f"/>`).join('')}
+  <g opacity=".9"><rect x="436" y="278" width="170" height="50" rx="10" fill="none" stroke="#9fb3d9" stroke-dasharray="4 4"/><text x="521" y="309" text-anchor="middle" fill="#9fb3d9" font-size="15">정문</text></g>
+  ${b}</svg>
+  <div class="cmhelp">${mode==='w'?'🚪 결승팀이 <b>기다리는 곳</b>을 지도에서 누르세요.':'🎤 결승 <b>공연을 하는 곳</b>을 지도에서 누르세요.'}</div></div>`;}
+function wireMap(){const m=$('#cmap');if(!m)return;
+  const redraw=()=>{save();const o=$('#cmap');if(o){o.outerHTML=CMAP();wireMap();}};
+  m.querySelectorAll('[data-mm]').forEach(b=>b.onclick=()=>{S.mapMode=b.dataset.mm;redraw();});
+  const pick=g=>{const n=g.dataset.n,mode=S.mapMode||(S.w&&!S.s?'s':'w');if(mode==='w'){S.w=n;if(!S.s)S.mapMode='s';}else{S.s=n;}redraw();};
+  m.querySelectorAll('.cb').forEach(g=>{g.onclick=()=>pick(g);g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(g);}};});}
 function go(n){S.sc=n;save();render();}
 function render(){
   [...$('#steps').children].forEach((s,i)=>s.classList.toggle('on',S.sc===1?i<=1:S.sc===2?i===2:false));
