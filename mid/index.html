@@ -581,7 +581,7 @@ h3{color:var(--ink)}
 
   <button class="btn" id="prevBack" type="button" hidden>교사 화면으로 돌아가기</button>
   <section class="board" id="board" hidden aria-label="실시간 팀 순위표">
-    <div class="bhead"><h1>실시간 팀 순위표</h1><div class="row"><span class="bstat" id="bStat">불러오는 중…</span><button class="btn ghost" id="bReset" type="button">새 수업 시작</button><button class="btn" id="bBack" type="button">게임으로 돌아가기</button></div></div>
+    <div class="bhead"><h1>실시간 팀 순위표</h1><div class="row"><span class="bstat" id="bStat">불러오는 중…</span><button class="btn ghost" id="bRes" type="button">교사용 결과표</button><button class="btn ghost" id="bReset" type="button">새 수업 시작</button><button class="btn" id="bBack" type="button">게임으로 돌아가기</button></div></div>
     <div class="row bctl"><div class="bsum" id="bSum"></div><div class="seg" role="group" aria-label="순위 기준"><button type="button" class="on" data-bm="all">팀원 전원 기준</button><button type="button" data-bm="lead">선두 기준</button></div></div>
     <div class="blist" id="bList"></div>
     <div class="cast-note">단계: ① 전달 문장 → ② 장소 찾기 → ③ 마리코에게 확인 → ④ 확인됨/안 됨 → ⑤ 메시지 보내기 · 4초마다 새로 고쳐져요.</div>
@@ -988,6 +988,7 @@ function drawBoard(){const teams={};BOARD_ROWS.forEach(r=>{(teams[r.team]=teams[
     <div class="bmem">${x.m.sort((a,b)=>a.role<b.role?-1:1).map(r=>`<span class="${r.step===Math.min(...x.m.map(y=>y.step))&&!x.done?'slow':''}">${esc(nm(r.role))} ${r.done?'✔':r.step}</span>`).join('')}</div></div>
     <div class="bnum"><span>오답 <b>${x.wrong}</b></span><span>힌트 <b>${x.hints}</b></span></div></div>`).join('');}
 $('#boardBtn').onclick=()=>showBoard(true);
+$('#bRes').onclick=()=>{showBoard(false);location.hash='teacher';};
 $('#bBack').onclick=()=>{showBoard(false);render();};
 document.querySelectorAll('[data-bm]').forEach(b=>b.onclick=()=>{BOARD_MODE=b.dataset.bm;document.querySelectorAll('[data-bm]').forEach(x=>x.classList.toggle('on',x===b));drawBoard();});
 $('#bReset').onclick=()=>{if($('#rsBox'))return;const d=document.createElement('div');d.id='rsBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');
@@ -1031,7 +1032,7 @@ $('#copyAll').onclick=()=>{const t=ROLES.map(r=>`${r.ko} 탐정 ${P[r.p].n}: ${l
 /* ---------- 결과 보내기 (db) ---------- */
 let DB=null, USER=null, MYID=null, CAN_WRITE=null, IS_T=GH_T();
 let PREV=false;
-function applyT(){const T=IS_T&&!PREV;document.querySelectorAll('.tonly').forEach(e=>e.hidden=!T);if(!IN_CLAUDE){const tb=document.getElementById('teacherBtn');if(tb)tb.hidden=true;}const tl=document.getElementById('tLock');if(tl)tl.hidden=IN_CLAUDE||IS_T;const pb=document.getElementById('prevBack');if(pb)pb.hidden=!(IS_T&&PREV);if(!IS_T&&S.demo){S.demo=false;save();render();}if(IS_T&&/^#(cards|intro)$/.test(location.hash))route();}
+function applyT(){const T=IS_T&&!PREV;document.querySelectorAll('.tonly').forEach(e=>e.hidden=!T);const tl=document.getElementById('tLock');if(tl)tl.hidden=IN_CLAUDE||IS_T;const pb=document.getElementById('prevBack');if(pb)pb.hidden=!(IS_T&&PREV);if(!IS_T&&S.demo){S.demo=false;save();render();}if(IS_T&&/^#(cards|intro)$/.test(location.hash))route();}
 (async()=>{try{
   if(!window.claude||!window.claude.use)return;
   DB=await window.claude.use('db'); USER=await window.claude.use('user');
@@ -1082,11 +1083,12 @@ function wireSend(){if(!IN_CLAUDE&&S.team){startArrive();return;}
 /* ---------- 교사용 결과 화면 ---------- */
 let TSUB=null, TROWS=[], TTIMER=null;
 function showTeacher(on){
-  $('#tview').hidden=!on;
+  $('#tview').hidden=!on;if(!on){clearInterval(GH_TT);GH_TT=null;}
   if(on){document.querySelector('.frame').hidden=true;document.querySelector('.teacher').hidden=true;$('#cards').hidden=true;$('#intro').hidden=true;startTeacher();}
 }
 async function startTeacher(){
   const box=$('#tbody');
+  if(!IN_CLAUDE){ghTeacher();return;}
   if(!DB){box.innerHTML='<p>결과 모음은 Claude에 로그인해서 이 페이지를 연 교사만 볼 수 있어요.</p>';return;}
   const isT=USER?((await USER.canEdit())||(await USER.isOwner())):false;
   if(!isT){box.innerHTML='<p>교사(이 페이지의 소유자·편집자)만 볼 수 있어요.</p>';return;}
@@ -1120,6 +1122,28 @@ async function drawTeacher(){
     for(const r of TROWS.slice()){try{await DB.collection('results').doc(r.id).delete();}catch(e){}}
     $('#tClearMsg').textContent='지웠어요.';};
 }
+
+/* ---------- GitHub: 교사용 결과 (구글 시트 자료) ---------- */
+let GH_TT=null;
+function ghTeacher(){const box=$('#tbody');
+  if(!IS_T){box.innerHTML='<p>교사 모드에서만 볼 수 있어요. 아래 [교사] 버튼으로 교사 모드를 켜 주세요.</p>';return;}
+  box.innerHTML='<p>불러오는 중…</p>';ghTeacherLoad();clearInterval(GH_TT);GH_TT=setInterval(ghTeacherLoad,5000);}
+async function ghTeacherLoad(){const box=$('#tbody');if($('#tview').hidden){clearInterval(GH_TT);GH_TT=null;return;}
+  let rows;try{const r=await fetch(GAS_URL+'?t='+Date.now());const j=await r.json();rows=(j.rows||[]).filter(x=>x.team&&x.role);}
+  catch(e){box.innerHTML='<p>결과를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</p>';return;}
+  if(!rows.length){box.innerHTML='<p>아직 들어온 학생이 없어요. 학생이 팀 번호를 고르고 [미션 시작]을 누르면 여기에 나타나요.</p>';return;}
+  const teams={};rows.forEach(r=>{(teams[r.team]=teams[r.team]||[]).push(r);});
+  const order=Object.keys(teams).sort((a,b)=>(+a||99)-(+b||99));
+  const fin=rows.filter(r=>r.done).length;
+  const ri=k=>{const i=ROLES.findIndex(x=>x.k===k);return i<0?9:i;};
+  const tm=v=>{const d=new Date(+v);return isNaN(d)?'':d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});};
+  box.innerHTML=`<div class="tsum"><div><b>${rows.length}명</b>참여 학생</div><div><b>${order.length}팀</b>참여 팀</div><div><b>${fin}명</b>끝까지 완료</div></div>
+  ${order.map(t=>`<div class="tteam"><h2>${esc(t)}팀</h2><div class="twrap"><table class="ttable"><thead><tr><th>역할</th><th>지금 단계</th><th>오답</th><th>힌트</th><th>처음 고른 전달 문장</th><th>다시 알려 준 메시지</th><th>완료</th><th>마지막 기록</th></tr></thead><tbody>
+    ${teams[t].sort((a,b)=>ri(a.role)-ri(b.role)).map(r=>{const role=ROLES.find(x=>x.k===r.role);
+      return `<tr><td>${role?esc(role.ko+' · '+P[role.p].n):esc(r.role)}</td><td>${r.done?'<span class="ok">✔ 완료</span>':esc((+r.step||0)+'/5 '+(STEPN[+r.step]||''))}</td><td class="num">${+r.wrong||0}</td><td class="num">${+r.hints||0}</td><td class="wfc"></td><td class="msgc"></td><td>${r.done?'<span class="ok">O</span>':'-'}</td><td class="num">${tm(r.t)}</td></tr>`;}).join('')}
+  </tbody></table></div></div>`).join('')}
+  <div class="cast-note">5초마다 새로 고쳐져요. ‘처음 고른 전달 문장’은 학생이 첫 번째로 고른 문장이에요(틀렸다면 어떤 오해를 했는지 볼 수 있어요). 기록을 지우려면 [실시간 순위표]의 [새 수업 시작]을 누르세요.</div>`;
+  let i=0;order.forEach(t=>teams[t].forEach(r=>{const tr=box.querySelectorAll('tbody tr')[i++];if(!tr)return;tr.querySelector('.wfc').textContent=String(r.wFirst||'-');tr.querySelector('.msgc').textContent=String(r.msg||'-');}));}
 $('#teacherBtn').onclick=()=>{location.hash='teacher';};
 $('#tBack').onclick=()=>{location.hash='';showTeacher(false);showCards(false);render();};
 
