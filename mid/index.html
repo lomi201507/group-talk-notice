@@ -971,7 +971,7 @@ const MAPPOS=[{x:28,y:206,w:200,h:124,ic:'hall'},{x:250,y:150,w:140,h:130,ic:'pl
 function MHELP(mode){if(mode==='w'&&S.w&&!S.s)return '✔ 대기 장소를 골랐어요. 이제 위의 <b>🎤 두 번째 탭</b>을 누르고 결승 무대를 고르세요.';
   return mode==='w'?'🚪 결승팀이 <b>기다리는 곳</b> 한 곳을 지도에서 누르세요.':'🎤 결승 <b>공연을 하는 곳</b> 한 곳을 지도에서 누르세요.';}
 const MAPIMG=true;
-const HS=[[/학생회관/,[2,54,37,36]],[/광장/,[38,33,25,36]],[/본관/,[8,2,33,35]],[/도서관/,[61,5,38,32]]];
+const HS=[[/학생회관/,[2,54,36,36]],[/광장/,[38,33,25,39]],[/본관/,[2,2,39,34]],[/도서관/,[61,5,38,33]]];
 function CMAPI(){const mode=S.mapMode||'w';
   const hs=BLD.map(([n])=>{const f=HS.find(x=>x[0].test(n));if(!f)return '';const h=f[1],isW=S.w===n,isS=S.s===n;
     return `<button type="button" class="cb hs${isW?' hw':''}${isS?' hsel':''}" data-n="${esc(n)}" aria-label="${esc(n)}${isW?' (대기 장소)':''}${isS?' (결승 무대)':''}" style="left:${h[0]}%;top:${h[1]}%;width:${h[2]}%;height:${h[3]}%"><span class="hpins">${isW?'<span class="hp pw">🚪 대기실</span>':''}${isS?'<span class="hp ps">🎤 무대</span>':''}</span></button>`;}).join('');
