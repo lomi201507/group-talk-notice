@@ -553,6 +553,12 @@ h3{color:var(--ink)}
 .o-need{font-size:14px;color:#ffdf94;font-weight:700;margin-top:-4px}
 .o-pick:has([aria-pressed="true"]) button[aria-pressed="false"]{opacity:.55}
 .o-pick button[aria-pressed="true"]{transform:translateY(-2px)}
+
+/* 팀원이 알려 준 말 확인 */
+.pcbox{background:#fff;border:1.5px solid #dfe6f3;border-top:6px solid #5fd6cf;border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.pchead b{display:block;font-size:18px;color:var(--navy)}.pchead span{font-size:14px;color:var(--soft)}
+.pcw{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:16px}.pcw img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none}
+.pcq .wopt:disabled{opacity:.5;cursor:not-allowed}
 </style>
 
 <div class="page">
@@ -809,14 +815,14 @@ W[1]=()=>{wireMissions();document.querySelectorAll('[data-x]').forEach(b=>b.oncl
   $('#next').onclick=()=>{stopVoice();go(2);};};
 
 const BLD=[['학생회관 2층','#f0c3b8'],['중앙광장','#f2d89a'],['본관 2층','#d6d0ef'],['도서관 2층','#c9d6e8']];
-V[2]=()=>`<div class="layer"><div class="panel"><h2>미션 1 · 지금 어디로 가야 할까?</h2>
+V[2]=()=>`<div class="layer"><div class="panel"><h2>미션 1 · 지금 어디로 가야 할까?</h2>${pcHTML()}
   <div class="tip"><b>물어보기</b> “그건 언제 나온 말이에요?” “비가 오면 옮긴다는 거예요, 벌써 옮겼다는 거예요?” “직접 들었어요?”</div>
   <h3>대기 장소는?</h3><div class="map" id="mw">${BLD.map(([n,c])=>`<button type="button" class="bld" data-n="${n}" style="background:${c}" aria-pressed="${S.w===n}">${n}</button>`).join('')}</div>
   <h3>결승 무대는?</h3><div class="map" id="ms">${BLD.map(([n,c])=>`<button type="button" class="bld" data-n="${n}" style="background:${c}" aria-pressed="${S.s===n}">${n}</button>`).join('')}</div>
   <div id="fb">${S.m1?'<div class="fb ok">맞아요! 비가 안 와서 무대는 중앙광장 그대로예요. 대기실만 학생회관 2층이에요.</div>':''}</div>
   <div class="row"><button class="btn ghost" id="back" type="button">◀ 내 단서 다시 보기</button>${S.m1?'<button class="btn red" id="next" type="button">대기실 도착 ▶ 미션 2</button>':'<button class="btn red" id="chk" type="button">이곳으로 출발!</button>'}</div>
   </div></div>`;
-W[2]=()=>{
+W[2]=()=>{wirePC();
   $('#mw').onclick=e=>{const b=e.target.closest('.bld');if(!b)return;S.w=b.dataset.n;save();render();};
   $('#ms').onclick=e=>{const b=e.target.closest('.bld');if(!b)return;S.s=b.dataset.n;save();render();};
   $('#back').onclick=()=>go(1);
@@ -827,7 +833,7 @@ W[2]=()=>{
     else if(S.s!=='중앙광장')m='원래 결승 무대가 어디인지 민수(문서 탐정)에게 물어보세요.';
     else if(S.w!=='학생회관 2층')m=`${S.w}? 대기실이 어느 건물인지 지아(현장 탐정)에게 물어보세요.`;
     if(S.firstTry.m1===undefined)S.firstTry.m1=!m;
-    if(m){S.m1tries=(S.m1tries||0)+1;$('#fb').innerHTML=`<div class="fb no">${esc(m)}${S.m1tries>=3?'<br>세 번 틀렸어요. 손을 들어 선생님께 도움을 요청하세요.':''}</div>`;save();return;}
+    if(m){S.m1tries=(S.m1tries||0)+1;S.m1Lock=Date.now()+15000;$('#fb').innerHTML=`<div class="fb no">${esc(m)}<br>15초 동안 팀원과 다시 이야기한 뒤 출발할 수 있어요.${S.m1tries>=3?'<br>세 번 틀렸어요. 손을 들어 선생님께 도움을 요청하세요.':''}</div>`;save();pcTimer();return;}
     S.m1=true;S.m1Left=leftSec();save();render();};
 };
 
@@ -908,6 +914,27 @@ function addPlayerCard(){
    <div class="pinfo">${propBadge(r.k,26)}<b>소품</b><span>${PNAME[r.k]}</span><span></span><b>특기</b><span>${SKILL[r.k]}</span><span></span><b>목표</b><span>${PGOAL[S.sc]||''}</span></div>`;
   layer.insertBefore(el,layer.firstChild);
 }
+
+/* ---------- 미션 1 전에: 팀원이 알려 준 말 확인 (듣지 않으면 못 풂) ---------- */
+let PC_T=null;
+function pcRoles(){return ROLES.map(r=>r.k).filter(k=>k!==S.role&&!(S.extra||[]).includes(k));}
+function pcOpts(k){const w=WOPT[k]||[];const ok=w.find(o=>o.ok);const bad=w.filter(o=>!o.ok&&!/내용은 맞지만|누구의 말/.test(o.fb)).slice(0,2).map(o=>({t:o.t,ok:0}));if(ok)bad.splice(k.length%3,0,{t:ok.t,ok:1});return bad;}
+function pcDone(){return !!(S.demo||S.m1||pcRoles().every(k=>(S.pcOk||{})[k]));}
+function pcHTML(){if(pcDone())return '';const now=Date.now();
+  return `<div class="pcbox"><div class="pchead"><b>먼저, 팀원이 알려 준 말을 확인해요</b><span>친구가 귓속말로 알려 준 내용을 고르세요. 잘 모르면 그 친구에게 다시 물어보세요.</span></div>${pcRoles().map(k=>{const r=ROLES.find(x=>x.k===k),nm=P[r.p].n,ok=(S.pcOk||{})[k],until=(S.pcLock||{})[k]||0,lock=until>now;
+    return `<div class="pcq"><div class="pcw"><img src="${F(r.p)}" alt=""><span><b>${nm}(${r.ko} 탐정)</b>이 뭐라고 했어요?</span></div>${ok?`<div class="fb ok">✔ ${esc(WOPT[k].find(o=>o.ok).t)}</div>`:
+      `<div class="wopts">${pcOpts(k).map((o,j)=>`<button type="button" class="wopt" data-pc="${k}-${j}" ${lock?'disabled':''}>${esc(o.t)}</button>`).join('')}</div>${lock?`<div class="fb no">아니에요. ${nm}에게 다시 물어보세요. <span class="pcwait" data-until="${until}"></span></div>`:''}`}</div>`;}).join('')}</div>`;}
+function pcTick(){if(S.sc!==2){clearInterval(PC_T);PC_T=null;return;}const now=Date.now();let again=false;
+  document.querySelectorAll('.pcwait').forEach(s=>{const l=Math.ceil((+s.dataset.until-now)/1000);if(l>0){s.textContent='('+l+'초 뒤에 다시 고를 수 있어요)';again=true;}});
+  const c=document.getElementById('chk');if(c&&!c.hidden&&(S.m1Lock||0)>now){c.disabled=true;c.textContent=Math.ceil((S.m1Lock-now)/1000)+'초 뒤에 다시 출발';again=true;}
+  if(!again){clearInterval(PC_T);PC_T=null;if(document.querySelector('.pcwait')||(c&&c.disabled))render();}}
+function pcTimer(){clearInterval(PC_T);PC_T=null;pcTick();if(document.querySelector('.pcwait')||(S.m1Lock||0)>Date.now())PC_T=setInterval(pcTick,500);}
+function wirePC(){
+  document.querySelectorAll('[data-pc]').forEach(b=>b.onclick=()=>{const i=b.dataset.pc.lastIndexOf('-'),k=b.dataset.pc.slice(0,i),o=pcOpts(k)[+b.dataset.pc.slice(i+1)];if(!o)return;
+    S.pcOk=S.pcOk||{};S.pcFirst=S.pcFirst||{};S.pcLock=S.pcLock||{};if(S.pcFirst[k]===undefined)S.pcFirst[k]=!!o.ok;
+    if(o.ok)S.pcOk[k]=true;else{S.pcWrong=(S.pcWrong||0)+1;S.pcLock[k]=Date.now()+10000;}save();render();});
+  if(!pcDone()){['#mw','#ms'].forEach(id=>{const e=$(id);if(!e)return;e.hidden=true;const h=e.previousElementSibling;if(h&&h.tagName==='H3')h.hidden=true;});const c=$('#chk');if(c)c.hidden=true;}
+  pcTimer();}
 function go(n){S.sc=n;save();render();}
 function render(){
   [...$('#steps').children].forEach((s,i)=>s.classList.toggle('on',S.sc===1?i<=1:S.sc===2?i===2:false));
@@ -975,8 +1002,8 @@ $('#tOut').onclick=()=>{askBox('교사 모드를 끌까요?','이 기기가 학�
 const GAS_URL='https://script.google.com/macros/s/AKfycbyRP0UN0Gj71WiSefDFk3v7xg0xgax616sEXeQEz3bKRiAuxf6bUTgdfHXeHrE1pT4/exec';
 const STEPN=['시작','① 전달 문장','② 장소 찾기','③ 마리코에게 확인','④ 확인됨/안 됨','⑤ 메시지 보내기'];
 function progStep(){if(S.sent)return 5;if(S.clsOk)return 4;if(S.q)return 3;if(S.m1)return 2;if((S.wOk||{})[S.role])return 1;return 0;}
-function progData(){const ft=S.firstTry||{};const wrong=(S.m1tries||0)+(S.clsTries||0)+(ft['w-'+S.role]===false?1:0)+(ft.q===false?1:0)+(typeof msgFirstWrong==='function'?msgFirstWrong().length:0);
-  const st=progStep();return {team:S.team,role:S.role,step:st,stepName:STEPN[st],wrong,hints:S.hintN||0,wFirst:(S.wFirst||{})[S.role]||'',msg:S.msg||'',done:!!S.sent,left:S.m1?(S.m1Left??null):(S.t0?leftSec():null)};}
+function progData(){const ft=S.firstTry||{};const wrong=(S.m1tries||0)+(S.clsTries||0)+(ft['w-'+S.role]===false?1:0)+(ft.q===false?1:0)+(typeof msgFirstWrong==='function'?msgFirstWrong().length:0)+(S.pcWrong||0);
+  const st=progStep();return {team:S.team,role:S.role,step:st,stepName:(st===1&&S.sc===2&&!pcDone())?'② 들은 말 확인':STEPN[st],wrong,hints:S.hintN||0,wFirst:(S.wFirst||{})[S.role]||'',msg:S.msg||'',done:!!S.sent,left:S.m1?(S.m1Left??null):(S.t0?leftSec():null)};}
 let PROG_LAST='';
 function sendProg(force){if(IN_CLAUDE||IS_T||!S.team||!S.role||!S.t0)return;const d=progData();const sig=JSON.stringify([d.step,d.wrong,d.hints,d.done,d.wFirst,d.msg]);if(!force&&sig===PROG_LAST)return;PROG_LAST=sig;
   try{fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d),keepalive:true}).catch(()=>{PROG_LAST='';});}catch(e){PROG_LAST='';}}
@@ -1053,7 +1080,7 @@ function applyT(){const T=IS_T&&!PREV;document.querySelectorAll('.tonly').forEac
 }catch(e){} applyT(); if(S.sc===4)render();})();
 function resultData(){
   const ft=S.firstTry||{};const yn=k=>ft[k]===undefined?null:!!ft[k];
-  return {team:S.team,role:S.role,extra:S.extra||[],m1Left:S.m1Left??null,m1Tries:S.m1tries||0,
+  return {team:S.team,role:S.role,extra:S.extra||[],m1Left:S.m1Left??null,m1Tries:S.m1tries||0,pcFirst:S.pcFirst||{},
     ordFirst:yn('w-'+S.role),m1First:yn('m1'),qFirst:yn('q'),clsFirst:yn('cls'),wFirst:String((S.wFirst||{})[S.role]||''),
     msg:S.msg||'',msgWrong:msgFirstWrong(),relay:!!S.relay,sentAt:Date.now()};
 }
@@ -1122,8 +1149,8 @@ async function drawTeacher(){
   const m1=TROWS.map(r=>r.m1Left).filter(v=>typeof v==='number');
   const avg=m1.length?Math.round(m1.reduce((a,b)=>a+b,0)/m1.length):null;
   box.innerHTML=`<div class="tsum"><div><b>${TROWS.length}명</b>보낸 학생</div><div><b>${order.length}팀</b>참여 팀</div><div><b>${done}명</b>반전까지 완료</div><div><b>${avg!==null?mmss(avg):'-'}</b>미션 1 평균 남은 시간</div></div>
-  ${order.map(t=>`<div class="tteam"><h2>${esc(t)}팀</h2><div class="twrap"><table class="ttable"><thead><tr><th>이름</th><th>역할</th><th>미션 1 남은 시간</th><th>전달 문장</th><th>미션 1</th><th>되묻기</th><th>확인/미확인 분류</th><th>처음 고른 전달 문장</th><th>다시 알려 준 메시지</th><th>보낸 시각</th></tr></thead><tbody>
-    ${teams[t].map(r=>{const role=ROLES.find(x=>x.k===r.role);return `<tr><td></td><td>${role?esc(role.ko+' · '+P[role.p].n):''}${(r.extra||[]).length?' 외':''}</td><td class="num">${typeof r.m1Left==='number'?mmss(r.m1Left):'-'}${r.m1Tries?` (오답 ${+r.m1Tries})`:''}</td><td>${OX(r.ordFirst)}</td><td>${OX(r.m1First)}</td><td>${OX(r.qFirst)}</td><td>${OX(r.clsFirst)}</td><td class="wfc"></td><td class="msgc"></td><td class="num">${r.sentAt?new Date(r.sentAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}):''}</td></tr>`;}).join('')}
+  ${order.map(t=>`<div class="tteam"><h2>${esc(t)}팀</h2><div class="twrap"><table class="ttable"><thead><tr><th>이름</th><th>역할</th><th>미션 1 남은 시간</th><th>전달 문장</th><th>들은 말 확인<br>(첫 시도)</th><th>미션 1</th><th>되묻기</th><th>확인/미확인 분류</th><th>처음 고른 전달 문장</th><th>다시 알려 준 메시지</th><th>보낸 시각</th></tr></thead><tbody>
+    ${teams[t].map(r=>{const role=ROLES.find(x=>x.k===r.role);return `<tr><td></td><td>${role?esc(role.ko+' · '+P[role.p].n):''}${(r.extra||[]).length?' 외':''}</td><td class="num">${typeof r.m1Left==='number'?mmss(r.m1Left):'-'}${r.m1Tries?` (오답 ${+r.m1Tries})`:''}</td><td>${OX(r.ordFirst)}</td><td class="num">${(()=>{const v=Object.values(r.pcFirst||{});return v.length?v.filter(Boolean).length+'/'+v.length+' 맞음':'-';})()}</td><td>${OX(r.m1First)}</td><td>${OX(r.qFirst)}</td><td>${OX(r.clsFirst)}</td><td class="wfc"></td><td class="msgc"></td><td class="num">${r.sentAt?new Date(r.sentAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}):''}</td></tr>`;}).join('')}
   </tbody></table></div></div>`).join('')}
   <div class="cast-note">O/X는 각 미션의 첫 시도 결과예요. ‘처음 고른 전달 문장’은 학생이 첫 번째로 고른 문장이에요(전달 문장이 X이면 어떤 오해를 했는지 볼 수 있어요). ‘다시 알려 준 메시지’는 학생이 고른 문장을 이은 그대로예요.</div>
   ${(USER&&await USER.isOwner())?`<div class="row"><button class="btn ghost" id="tClear" type="button">새 수업 시작: 결과 모두 지우기</button><span id="tClearMsg"></span></div>`:''}`;
@@ -1153,7 +1180,7 @@ async function ghTeacherLoad(){const box=$('#tbody');if($('#tview').hidden){clea
   box.innerHTML=`<div class="tsum"><div><b>${rows.length}명</b>참여 학생</div><div><b>${order.length}팀</b>참여 팀</div><div><b>${fin}명</b>끝까지 완료</div></div>
   ${order.map(t=>`<div class="tteam"><h2>${esc(t)}팀</h2><div class="twrap"><table class="ttable"><thead><tr><th>역할</th><th>지금 단계</th><th>오답</th><th>힌트</th><th>처음 고른 전달 문장</th><th>다시 알려 준 메시지</th><th>완료</th><th>마지막 기록</th></tr></thead><tbody>
     ${teams[t].sort((a,b)=>ri(a.role)-ri(b.role)).map(r=>{const role=ROLES.find(x=>x.k===r.role);
-      return `<tr><td>${role?esc(role.ko+' · '+P[role.p].n):esc(r.role)}</td><td>${r.done?'<span class="ok">✔ 완료</span>':esc((+r.step||0)+'/5 '+(STEPN[+r.step]||''))}</td><td class="num">${+r.wrong||0}</td><td class="num">${+r.hints||0}</td><td class="wfc"></td><td class="msgc"></td><td>${r.done?'<span class="ok">O</span>':'-'}</td><td class="num">${tm(r.t)}</td></tr>`;}).join('')}
+      return `<tr><td>${role?esc(role.ko+' · '+P[role.p].n):esc(r.role)}</td><td>${r.done?'<span class="ok">✔ 완료</span>':esc((+r.step||0)+'/5 '+(r.stepName||STEPN[+r.step]||''))}</td><td class="num">${+r.wrong||0}</td><td class="num">${+r.hints||0}</td><td class="wfc"></td><td class="msgc"></td><td>${r.done?'<span class="ok">O</span>':'-'}</td><td class="num">${tm(r.t)}</td></tr>`;}).join('')}
   </tbody></table></div></div>`).join('')}
   <div class="cast-note">5초마다 새로 고쳐져요. ‘처음 고른 전달 문장’은 학생이 첫 번째로 고른 문장이에요(틀렸다면 어떤 오해를 했는지 볼 수 있어요). 기록을 지우려면 [실시간 순위표]의 [새 수업 시작]을 누르세요.</div>`;
   let i=0;order.forEach(t=>teams[t].forEach(r=>{const tr=box.querySelectorAll('tbody tr')[i++];if(!tr)return;tr.querySelector('.wfc').textContent=String(r.wFirst||'-');tr.querySelector('.msgc').textContent=String(r.msg||'-');}));}
