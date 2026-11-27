@@ -1136,7 +1136,7 @@ async function ghTeacherLoad(){const box=$('#tbody');if($('#tview').hidden){clea
   const order=Object.keys(teams).sort((a,b)=>(+a||99)-(+b||99));
   const fin=rows.filter(r=>r.done).length;
   const ri=k=>{const i=ROLES.findIndex(x=>x.k===k);return i<0?9:i;};
-  const tm=v=>{const d=new Date(+v);return isNaN(d)?'':d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});};
+  const tm=v=>{const d=new Date(isNaN(+v)?v:+v);return isNaN(d)?'':d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});};
   box.innerHTML=`<div class="tsum"><div><b>${rows.length}명</b>참여 학생</div><div><b>${order.length}팀</b>참여 팀</div><div><b>${fin}명</b>끝까지 완료</div></div>
   ${order.map(t=>`<div class="tteam"><h2>${esc(t)}팀</h2><div class="twrap"><table class="ttable"><thead><tr><th>역할</th><th>지금 단계</th><th>오답</th><th>힌트</th><th>처음 고른 전달 문장</th><th>다시 알려 준 메시지</th><th>완료</th><th>마지막 기록</th></tr></thead><tbody>
     ${teams[t].sort((a,b)=>ri(a.role)-ri(b.role)).map(r=>{const role=ROLES.find(x=>x.k===r.role);
