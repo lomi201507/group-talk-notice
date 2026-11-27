@@ -918,7 +918,7 @@ function addPlayerCard(){
 /* ---------- 미션 1 전에: 팀원이 알려 준 말 확인 (듣지 않으면 못 풂) ---------- */
 let PC_T=null;
 function pcRoles(){return ROLES.map(r=>r.k).filter(k=>k!==S.role&&!(S.extra||[]).includes(k));}
-function pcOpts(k){const w=WOPT[k]||[];const ok=w.find(o=>o.ok);const bad=w.filter(o=>!o.ok&&!/내용은 맞지만|누구의 말/.test(o.fb)).slice(0,2).map(o=>({t:o.t,ok:0}));if(ok)bad.splice(k.length%3,0,{t:ok.t,ok:1});return bad;}
+function pcOpts(k){const w=WOPT[k]||[];const ok=w.find(o=>o.ok);const bad=w.filter(o=>!o.ok&&!/내용은 맞지만|누구의 말/.test(o.fb)).slice(0,2).map(o=>({t:o.t,ok:0}));if(ok)bad.splice(Math.min(bad.length,({listen:1,doc:2,field:0,analysis:1})[k]??1),0,{t:ok.t,ok:1});return bad;}
 function pcDone(){return !!(S.demo||S.m1||pcRoles().every(k=>(S.pcOk||{})[k]));}
 function pcHTML(){if(pcDone())return '';const now=Date.now();
   return `<div class="pcbox"><div class="pchead"><b>먼저, 팀원이 알려 준 말을 확인해요</b><span>친구가 귓속말로 알려 준 내용을 고르세요. 잘 모르면 그 친구에게 다시 물어보세요.</span></div>${pcRoles().map(k=>{const r=ROLES.find(x=>x.k===k),nm=P[r.p].n,ok=(S.pcOk||{})[k],until=(S.pcLock||{})[k]||0,lock=until>now;
