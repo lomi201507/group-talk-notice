@@ -637,6 +637,11 @@ h3{color:var(--ink)}
 .pcq .wopt .pcn{flex:none;font-weight:800;color:#16224a}
 .pcq .fb{margin-left:46px}
 @media (max-width:520px){.pcq .wopts,.pcq .fb{margin-left:22px}}
+
+/* 단서 말풍선 줄바꿈 · 내 수첩 버튼 크기 */
+.pair,.panel{word-break:keep-all;overflow-wrap:break-word}
+.card.clue .bubble>div{flex:1;min-width:0}
+.fhint{font-size:15px!important;padding:8px 14px!important}
 </style>
 
 <div class="page">
@@ -777,7 +782,7 @@ const WR={
     model:'마리코 씨는 줄리앙 씨가 2층으로 오라고 했다는데, 줄리앙 씨한테 직접 들었는지는 몰라요.',
     checks:[['마리코와 줄리앙',/(마리코).*(줄리앙)|(줄리앙).*(마리코)/],['전하는 말 (-래요 / -라고 / -대요)',/(래|라고|대요|다는데|대)/],['확인되지 않았다는 것 (직접 / 모르다 / 확인)',/(직접|모르|몰라|확인)/]]}
 };
-const WOPT={"listen": [{"t": "김 선생님이 비가 와서 무대가 2층으로 바뀌었대요.", "ok": 0, "fb": "김 선생님은 비가 <b>안 와서</b> 무대는 <b>그대로</b>라고 했어요."}, {"t": "김 선생님이 지금 비가 안 와서 무대는 그대로래요. 대기실만 2층으로 바뀌었대요.", "ok": 1, "fb": ""}, {"t": "지금 비가 안 와서 무대는 그대로예요. 대기실만 2층으로 바뀌었어요.", "ok": 0, "fb": "내용은 맞지만 <b>누구의 말인지</b>가 없어요. 들은 말은 ‘-대요 / -래요’로 전해요."}, {"t": "김 선생님이 대기실하고 무대가 다 2층으로 바뀌었대요.", "ok": 0, "fb": "‘대기실<b>만</b>’ 바뀌었어요. 무대는 그대로예요."}], "doc": [{"t": "공지에 무대를 학생회관 2층으로 옮겼다고 쓰여 있어요.", "ok": 0, "fb": "이미 옮긴 게 아니에요. <b>비가 내리면</b> 옮긴다는 조건이에요."}, {"t": "무대는 중앙광장이고, 비가 내리면 학생회관 2층으로 옮겨요.", "ok": 0, "fb": "내용은 맞지만 <b>어디에서 본 말인지</b>가 없어요. ‘공지에 ~다고 쓰여 있어요’처럼 전해요."}, {"t": "공지에 무대는 중앙광장이고, 비가 내리면 학생회관 2층으로 옮긴다고 쓰여 있어요.", "ok": 1, "fb": ""}, {"t": "공지에 비가 와서 무대가 중앙광장으로 바뀌었다고 쓰여 있어요.", "ok": 0, "fb": "중앙광장은 <b>원래 무대</b>예요. 바뀐 게 아니에요."}], "field": [{"t": "안내판에 결승팀 대기실이 학생회관 2층이라고 쓰여 있어요. 공연 장소에 대한 말은 없어요.", "ok": 1, "fb": ""}, {"t": "안내판에 결승 무대가 학생회관 2층이라고 쓰여 있어요.", "ok": 0, "fb": "안내판은 <b>대기실</b> 안내예요. 무대 안내가 아니에요."}, {"t": "결승팀 대기실은 학생회관 2층이에요. 공연도 거기서 해요.", "ok": 0, "fb": "공연 장소는 안내판에 <b>없어요</b>. 모르는 것을 사실처럼 말하면 안 돼요."}, {"t": "안내판에 대기실이 2층이라고 쓰여 있어요.", "ok": 0, "fb": "<b>어느 건물</b> 2층인지 빠졌어요."}], "analysis": [{"t": "줄리앙 씨가 공연장이 2층으로 바뀌었다고 했어요.", "ok": 0, "fb": "줄리앙이 그렇게 말했는지 <b>확인되지 않았어요</b>. 마리코도 전해 들은 말이에요."}, {"t": "마리코 씨가 줄리앙 씨한테 직접 2층으로 오라는 말을 들었대요.", "ok": 0, "fb": "마리코는 “몰라 ㅠ 줄리앙이 <b>그랬대</b>.”라고 했어요. 직접 들은 게 아니에요."}, {"t": "마리코 씨가 2층으로 오래요.", "ok": 0, "fb": "<b>누구의 말</b>을 전한 것인지 빠졌어요. 마리코는 줄리앙의 말을 전해 들었어요."}, {"t": "마리코 씨는 줄리앙 씨가 2층으로 오라고 했다는데, 줄리앙 씨한테 직접 들었는지는 몰라요.", "ok": 1, "fb": ""}]};
+const WOPT={"listen": [{"t": "김 선생님이 비가 와서 무대가 2층으로 바뀌었대요.", "ok": 0, "fb": "김 선생님은 비가 <b>안 와서</b> 무대는 그대로라고 했어요."}, {"t": "김 선생님이 무대는 그대로래요. 대기실만 2층이래요.", "ok": 1, "fb": ""}, {"t": "무대는 그대로예요. 대기실만 2층이에요.", "ok": 0, "fb": "내용은 맞지만 <b>누구의 말</b>인지가 없어요. 들은 말은 ‘-대요 / -래요’로 전해요."}], "doc": [{"t": "공지에 무대를 벌써 2층으로 옮겼대요.", "ok": 0, "fb": "벌써 옮긴 게 아니에요. <b>비가 내리면</b> 옮긴다는 조건이에요."}, {"t": "무대는 중앙광장이에요. 비가 내리면 2층으로 옮겨요.", "ok": 0, "fb": "내용은 맞지만 <b>어디에서 본 말</b>인지가 없어요. ‘공지에 ~래요’처럼 전해요."}, {"t": "공지에 무대는 중앙광장이래요. 비가 내리면 2층으로 옮긴대요.", "ok": 1, "fb": ""}], "field": [{"t": "안내판에 대기실이 학생회관 2층이라고 쓰여 있어요.", "ok": 1, "fb": ""}, {"t": "안내판에 무대가 학생회관 2층이라고 쓰여 있어요.", "ok": 0, "fb": "안내판은 <b>대기실</b> 안내예요. 무대 안내가 아니에요."}, {"t": "대기실은 학생회관 2층이에요. 공연도 거기서 해요.", "ok": 0, "fb": "공연 장소는 안내판에 없어요. <b>모르는 것</b>을 사실처럼 말하면 안 돼요."}], "analysis": [{"t": "줄리앙이 무대가 2층으로 바뀌었다고 했어요.", "ok": 0, "fb": "줄리앙이 그렇게 말했는지 <b>확인되지 않았어요</b>. 마리코도 전해 들은 말이에요."}, {"t": "마리코가 줄리앙한테 직접 들었대요.", "ok": 0, "fb": "마리코는 “몰라 ㅠ 줄리앙이 그랬대.”라고 했어요. <b>직접 들은 게 아니에요</b>."}, {"t": "마리코도 다른 사람한테 들었대요. 줄리앙이 직접 말했는지는 몰라요.", "ok": 1, "fb": ""}]};
 const isAna=()=>S.demo||S.role==='analysis'||(S.extra||[]).includes('analysis');
 const leftSec=()=>S.t0?Math.max(0,900-Math.floor((Date.now()-S.t0)/1000)):900;
 const mmss=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
@@ -843,7 +848,6 @@ function missionHTML(k){
   const m=WR[k], ok=S.wOk[k], pick=(S.wPick||{})[k];
   return `<div class="mission task" data-m="${k}">
     <div class="mh"><span class="tk" aria-hidden="true">🎯</span><div><div class="mt">미션 · 친구에게 전할 문장 고르기</div><div class="ms">단서 자료를 보고, 친구에게 말할 문장을 고르세요.</div></div></div>
-    <div class="ctx">${m.ask}</div>
     ${ok?`<div class="show">${esc(WOPT[k].find(o=>o.ok).t)}</div><div class="fb ok">좋아요! 이 문장을 팀원에게 귓속말로 전해 주세요.</div>`:
      `<div class="wopts">${WOPT[k].map((o,i)=>`<button type="button" class="wopt${pick===i?' no':''}" data-wo="${k}" data-i="${i}">${String.fromCharCode(9312+i)} ${esc(o.t)}</button>`).join('')}</div>
       <div data-wfb="${k}">${pick!=null&&!WOPT[k][pick].ok?`<div class="fb no">${WOPT[k][pick].fb} 다시 골라 보세요.</div>`:''}</div>`}
@@ -1059,7 +1063,7 @@ function go(n){S.sc=n;save();render();}
 function FH_OFF(){const f=document.querySelector('.frame');return ['tview','intro','cards','board'].some(id=>{const e=document.getElementById(id);return e&&!e.hidden;})||!f||!f.offsetParent;}
 setInterval(()=>{const b=document.getElementById('fhint');if(b&&b.hidden!==(FH_OFF()||!(S.sc>=1&&S.sc<=4)||!!document.getElementById('hintBox')||!!document.getElementById('noteBox')))fhintSync();},500);
 function fhintSync(){let b=document.getElementById('fhint');if(!b){b=document.createElement('button');b.id='fhint';b.type='button';b.className='fhint';b.innerHTML='📝 내 수첩';b.setAttribute('aria-label','내 수첩 보기');b.onclick=openNote;document.body.appendChild(b);addEventListener('scroll',fhintPos,{passive:true});addEventListener('resize',fhintPos);}b.hidden=FH_OFF()||!(S.sc>=1&&S.sc<=4)||!!document.getElementById('hintBox')||!!document.getElementById('noteBox');fhintPos();}
-function fhintPos(){const b=document.getElementById('fhint');if(!b||b.hidden)return;const tp=document.getElementById('tp'),fr=document.querySelector('.frame');let top=12,right=14;if(fr){const r=fr.getBoundingClientRect();right=Math.max(14,innerWidth-r.right+12);}if(tp&&!tp.hidden){const r=tp.getBoundingClientRect();if(r.bottom>0)top=Math.max(12,r.bottom+8);}b.style.top=top+'px';b.style.right=right+'px';}
+function fhintPos(){const b=document.getElementById('fhint');if(!b||b.hidden)return;const tp=document.getElementById('tp'),fr=document.querySelector('.frame');let top=12,right=14;if(fr){const r=fr.getBoundingClientRect(),gap=innerWidth-r.right;right=gap>b.offsetWidth+24?Math.max(8,gap-b.offsetWidth-12):Math.max(14,gap+12);}if(tp&&!tp.hidden){const r=tp.getBoundingClientRect();if(r.bottom>0)top=Math.max(12,r.bottom+8);}b.style.top=top+'px';b.style.right=right+'px';}
 function render(){setTimeout(fhintSync,0);
   [...$('#steps').children].forEach((s,i)=>s.classList.toggle('on',S.sc===1?i<=1:S.sc===2?i===2:false));
   $('#steps').hidden=!(S.sc===1||S.sc===2);
