@@ -630,6 +630,13 @@ h3{color:var(--ink)}
 .mission.task .ctx{font-weight:700}
 .mission.task .show{background:#e6f6f2;border-left-color:#2fb39a}
 @media (min-width:1100px){.pair{grid-template-columns:2fr 3fr!important}.mission.task{margin-top:0}.mission.task::before{content:none}}
+
+/* 팀원의 말 확인: 보기 번호 + 들여쓰기 */
+.pcq .wopts{margin-left:46px;display:flex;flex-direction:column;gap:8px}
+.pcq .wopt{display:flex;gap:8px;align-items:flex-start;text-align:left}
+.pcq .wopt .pcn{flex:none;font-weight:800;color:#16224a}
+.pcq .fb{margin-left:46px}
+@media (max-width:520px){.pcq .wopts,.pcq .fb{margin-left:22px}}
 </style>
 
 <div class="page">
@@ -1001,7 +1008,7 @@ function pcDone(){return !!(S.demo||S.m1||pcRoles().every(k=>(S.pcOk||{})[k]));}
 function pcHTML(){if(pcDone())return '';const now=Date.now();
   return `<div class="pcbox"><div class="pchead"><b>먼저, 팀원이 알려 준 말을 확인해요</b><span>친구가 귓속말로 알려 준 내용을 고르세요. 잘 모르면 그 친구에게 다시 물어보세요.</span></div>${pcRoles().map(k=>{const r=ROLES.find(x=>x.k===k),nm=P[r.p].n,ok=(S.pcOk||{})[k],until=(S.pcLock||{})[k]||0,lock=until>now;
     return `<div class="pcq"><div class="pcw"><img src="${F(r.p)}" alt=""><span><b>${nm}(${r.ko})</b>${((nm.charCodeAt(nm.length-1)-0xAC00)%28)?'이':'가'} 뭐라고 했어요?</span></div>${ok?`<div class="fb ok">✔ ${PB(pcOpts(k).find(o=>o.ok).t)}</div>`:
-      `<div class="wopts">${pcOpts(k).map((o,j)=>`<button type="button" class="wopt" data-pc="${k}-${j}" ${lock?'disabled':''}>${PB(o.t)}</button>`).join('')}</div>${lock?`<div class="fb no">아니에요. ${nm}에게 다시 물어보세요. <span class="pcwait" data-until="${until}"></span></div>`:''}`}</div>`;}).join('')}</div>`;}
+      `<div class="wopts">${pcOpts(k).map((o,j)=>`<button type="button" class="wopt" data-pc="${k}-${j}" ${lock?'disabled':''}><span class="pcn">${String.fromCharCode(9312+j)}</span><span>${PB(o.t)}</span></button>`).join('')}</div>${lock?`<div class="fb no">아니에요. ${nm}에게 다시 물어보세요. <span class="pcwait" data-until="${until}"></span></div>`:''}`}</div>`;}).join('')}</div>`;}
 function pcTick(){if(S.sc!==2){clearInterval(PC_T);PC_T=null;return;}const now=Date.now();let again=false;
   document.querySelectorAll('.pcwait').forEach(s=>{const l=Math.ceil((+s.dataset.until-now)/1000);if(l>0){s.textContent='('+l+'초 뒤에 다시 고를 수 있어요)';again=true;}});
   const c=document.getElementById('chk');if(c&&!c.hidden&&(S.m1Lock||0)>now){c.disabled=true;c.textContent=Math.ceil((S.m1Lock-now)/1000)+'초 뒤에 다시 출발';again=true;}
@@ -1052,7 +1059,7 @@ function go(n){S.sc=n;save();render();}
 function FH_OFF(){const f=document.querySelector('.frame');return ['tview','intro','cards','board'].some(id=>{const e=document.getElementById(id);return e&&!e.hidden;})||!f||!f.offsetParent;}
 setInterval(()=>{const b=document.getElementById('fhint');if(b&&b.hidden!==(FH_OFF()||!(S.sc>=1&&S.sc<=4)||!!document.getElementById('hintBox')||!!document.getElementById('noteBox')))fhintSync();},500);
 function fhintSync(){let b=document.getElementById('fhint');if(!b){b=document.createElement('button');b.id='fhint';b.type='button';b.className='fhint';b.innerHTML='📝 내 수첩';b.setAttribute('aria-label','내 수첩 보기');b.onclick=openNote;document.body.appendChild(b);addEventListener('scroll',fhintPos,{passive:true});addEventListener('resize',fhintPos);}b.hidden=FH_OFF()||!(S.sc>=1&&S.sc<=4)||!!document.getElementById('hintBox')||!!document.getElementById('noteBox');fhintPos();}
-function fhintPos(){const b=document.getElementById('fhint');if(!b||b.hidden)return;const tp=document.getElementById('tp'),fr=document.querySelector('.frame');let top=12,right=14;if(fr){const r=fr.getBoundingClientRect();right=Math.max(14,innerWidth-r.right+12);}if(tp&&!tp.hidden){const r=tp.getBoundingClientRect();if(r.bottom>0)top=Math.max(12,r.bottom+8);right=Math.max(8,innerWidth-r.right);}b.style.top=top+'px';b.style.right=right+'px';}
+function fhintPos(){const b=document.getElementById('fhint');if(!b||b.hidden)return;const tp=document.getElementById('tp'),fr=document.querySelector('.frame');let top=12,right=14;if(fr){const r=fr.getBoundingClientRect();right=Math.max(14,innerWidth-r.right+12);}if(tp&&!tp.hidden){const r=tp.getBoundingClientRect();if(r.bottom>0)top=Math.max(12,r.bottom+8);}b.style.top=top+'px';b.style.right=right+'px';}
 function render(){setTimeout(fhintSync,0);
   [...$('#steps').children].forEach((s,i)=>s.classList.toggle('on',S.sc===1?i<=1:S.sc===2?i===2:false));
   $('#steps').hidden=!(S.sc===1||S.sc===2);
