@@ -597,6 +597,8 @@ h3{color:var(--ink)}
 .hintcard .hnum{margin-left:auto;font-weight:800;font-size:15px}
 .hintcard .hbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0 20px}
 .hintcard .hbtns .btn{margin:0;align-self:auto}
+.fhint{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:50;border:0;border-radius:999px;background:#f6c445;color:#16224a;font-weight:900;font-size:18px;padding:12px 20px;box-shadow:0 0 0 3px #fff,0 6px 20px #0006;cursor:pointer}
+.fhint:focus-visible{outline:3px solid #16224a;outline-offset:3px}
 </style>
 
 <div class="page">
@@ -1008,7 +1010,8 @@ function wireMap(){const m=$('#cmap');if(!m)return;
   const pick=g=>{const n=g.dataset.n,mode=S.mapMode||'w';if(mode==='w')S.w=n;else S.s=n;redraw();};
   m.querySelectorAll('.cb').forEach(g=>{g.onclick=()=>pick(g);g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(g);}};});}
 function go(n){S.sc=n;save();render();}
-function render(){
+function fhintSync(){let b=document.getElementById('fhint');if(!b){b=document.createElement('button');b.id='fhint';b.type='button';b.className='fhint';b.innerHTML='💡 힌트';b.setAttribute('aria-label','힌트 보기');b.onclick=()=>{const h=document.getElementById('hint');if(h)h.click();};document.body.appendChild(b);}b.hidden=!(S.sc>=1&&S.sc<=4)||!!document.getElementById('hintBox');}
+function render(){setTimeout(fhintSync,0);
   [...$('#steps').children].forEach((s,i)=>s.classList.toggle('on',S.sc===1?i<=1:S.sc===2?i===2:false));
   $('#steps').hidden=!(S.sc===1||S.sc===2);
   $('#stage').innerHTML=V[S.sc]();W[S.sc]();
@@ -1118,7 +1121,7 @@ $('#reset').onclick=()=>{if($('#rsBox'))return;const d=document.createElement('d
   document.body.appendChild(d);$('#rsNo').focus();
   $('#rsNo').onclick=()=>d.remove();d.onclick=e=>{if(e.target===d)d.remove();};
   $('#rsYes').onclick=()=>{d.remove();stopVoice();location.hash=location.hash.replace(/^#(teacher|intro|cards)$/,'');reset();window.scrollTo(0,0);};};
-$('#hint').onclick=()=>{if($('#hintBox'))return;const d=document.createElement('div');d.id='hintBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','hintT');d.innerHTML='<div class="hintcard"><div class="hbar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><b id="hintT">아리의 힌트</b><span class="hnum"></span></div><div class="hbody"><img alt=""><p></p></div><div class="hbtns"><button class="btn ghost" id="hintNext" type="button">다음 힌트 ▶</button><button class="btn" id="hintOk" type="button">알겠어요</button></div></div>';d.querySelector('img').src=F('aye');hintShow(d);d.querySelector('#hintNext').onclick=()=>{S.hs=S.hs||{};S.hs[S.sc]=(S.hs[S.sc]||0)+1;S.hintN=(S.hintN||0)+1;save();hintShow(d);};document.body.appendChild(d);const ok=d.querySelector('#hintOk');ok.focus();const close=()=>{d.remove();$('#hint').focus();};ok.onclick=close;d.onclick=e=>{if(e.target===d)close();};d.onkeydown=e=>{if(e.key==='Escape')close();};S.hintN=(S.hintN||0)+1;save();};
+$('#hint').onclick=()=>{if($('#hintBox'))return;const d=document.createElement('div');d.id='hintBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','hintT');d.innerHTML='<div class="hintcard"><div class="hbar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><b id="hintT">아리의 힌트</b><span class="hnum"></span></div><div class="hbody"><img alt=""><p></p></div><div class="hbtns"><button class="btn ghost" id="hintNext" type="button">다음 힌트 ▶</button><button class="btn" id="hintOk" type="button">알겠어요</button></div></div>';d.querySelector('img').src=F('aye');hintShow(d);d.querySelector('#hintNext').onclick=()=>{S.hs=S.hs||{};S.hs[S.sc]=(S.hs[S.sc]||0)+1;S.hintN=(S.hintN||0)+1;save();hintShow(d);};document.body.appendChild(d);fhintSync();const ok=d.querySelector('#hintOk');ok.focus();const close=()=>{d.remove();fhintSync();$('#hint').focus();};ok.onclick=close;d.onclick=e=>{if(e.target===d)close();};d.onkeydown=e=>{if(e.key==='Escape')close();};S.hintN=(S.hintN||0)+1;save();};
 
 const HSTEP={
  1:['먼저 내 단서를 끝까지 보고, 친구에게 전할 문장을 고르세요.','친구가 말해 주면 이렇게 물어보세요. “어디서 나온 말이에요?”','그래도 헷갈리면 이렇게 물어보세요. “직접 들었어요?”'],
