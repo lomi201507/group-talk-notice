@@ -599,6 +599,37 @@ h3{color:var(--ink)}
 .hintcard .hbtns .btn{margin:0;align-self:auto}
 .fhint{position:fixed;top:12px;right:14px;z-index:50;border:0;border-radius:999px;background:#f6c445;color:#16224a;font-weight:900;font-size:18px;padding:12px 20px;box-shadow:0 0 0 3px #fff,0 6px 20px #0006;cursor:pointer}
 .fhint:focus-visible{outline:3px solid #16224a;outline-offset:3px}
+
+/* 쉬운 역할 이름 · 게임 방법 · 내 수첩 · 힌트 버튼 */
+.o-pick .rk2{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}.o-pick .rk2 small{font-size:12.5px;font-weight:700;opacity:.85}
+.howcard,.notecard{background:#fff;color:#1d2747;border-radius:20px;overflow:hidden;width:min(600px,94vw);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 0 0 3px #5fd6cf,0 0 30px #5fd6cf66}
+.howcard .hbar,.notecard .hbar{display:flex;align-items:center;gap:10px;background:#16224a;color:#fff;padding:12px 18px}
+.howcard .hbar b,.notecard .hbar b{font-size:20px;font-weight:900}.howcard .hbar span,.notecard .hbar span{margin-left:auto;font-size:14px;color:#9fe8e2}
+.howme{display:flex;gap:12px;align-items:center;margin:14px 18px 4px;background:#eef6ff;border-radius:14px;padding:10px 12px}
+.howme img{width:54px;height:54px;border-radius:50%;object-fit:cover;flex:none}.howme small{display:block;color:var(--soft);font-size:13px}.howme b{display:block;font-size:18px}.howme span{font-size:14.5px}
+.howst{list-style:none;margin:8px 18px;padding:0;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.howst li{display:flex;gap:12px;align-items:flex-start}.howst .n{flex:none;width:30px;height:30px;border-radius:50%;background:#5fd6cf;color:#16224a;font-weight:900;display:grid;place-items:center}
+.howst b{display:block;font-size:17px}.howst span{display:block;font-size:15px;color:var(--soft)}.howst em{display:inline-block;margin-top:4px;font-style:normal;background:#fff7d6;border-left:4px solid #f2b600;border-radius:8px;padding:3px 10px;font-size:15px}
+.howtip{margin:4px 18px 0;font-size:15px;color:var(--soft)}
+.howcard .btn,.notecard .btn{align-self:center;margin:14px 0 18px;padding:10px 34px}
+.nbody{overflow:auto;padding:12px 18px;display:flex;flex-direction:column;gap:12px}
+.nsec h4{margin:0 0 6px;font-size:16px;color:#16224a}.nsec ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.nsec li{display:flex;gap:8px;align-items:flex-start;background:#f2f6fd;border-radius:12px;padding:8px 10px;font-size:15px}.nsec li.dim{background:#f7f7f9;color:#8a90a3}
+.nsec li img{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none}
+.ihint{align-self:flex-start;border:2px solid #f6c445;background:#fff8dc;color:#16224a;font-weight:800;font-size:16px;border-radius:999px;padding:8px 18px;cursor:pointer}
+.ihint:hover{background:#ffefb0}
+.card.clue{position:relative;padding-top:32px!important;background:#f4f5f8!important;border:1.5px solid #d6dbe6!important;box-shadow:none!important;font-size:15px}
+.card.clue::before{content:"📎 단서 자료 · 나만 볼 수 있어요";position:absolute;top:0;left:0;background:#6b7591;color:#fff;font-size:13px;font-weight:800;padding:4px 12px;border-radius:0 0 12px 0}
+.card.clue h3{font-size:16px;color:#4a5370}.card.clue .prop{transform:scale(.8);opacity:.8}
+.mission.task{position:relative;margin-top:34px;background:#fff!important;border:3px solid #e0544a!important;border-radius:18px;box-shadow:0 8px 24px #e0544a33!important;overflow:visible}
+.mission.task::before{content:"⬇ 단서를 보고 미션을 풀어요";position:absolute;top:-30px;left:50%;transform:translateX(-50%);white-space:nowrap;font-weight:800;font-size:15px;color:#16224a}
+.mission.task .mh{margin:-16px -18px 0;background:#e0544a;color:#fff;padding:12px 18px;border-radius:14px 14px 0 0}
+.mission.task .tk{font-size:28px;line-height:1;flex:none}
+.mission.task .mt{font-size:21px;color:#fff}
+.mission.task .ms{color:#ffe3df!important;font-size:14.5px}
+.mission.task .ctx{font-weight:700}
+.mission.task .show{background:#e6f6f2;border-left-color:#2fb39a}
+@media (min-width:1100px){.pair{grid-template-columns:2fr 3fr!important}.mission.task{margin-top:0}.mission.task::before{content:none}}
 </style>
 
 <div class="page">
@@ -650,7 +681,7 @@ h3{color:var(--ink)}
     </div>
     <div class="big">내 화면은 나만 봐요. 친구에게는 귓속말로만!</div>
     <ol>
-      <li>카드를 한 장 뽑으세요. 그게 나의 탐정이에요.</li>
+      <li>카드를 한 장 뽑으세요. 그게 나의 역할이에요.</li>
       <li>카드의 QR을 찍으세요.</li>
       <li>친구 화면은 보지 마세요.</li>
       <li>내가 알게 된 것을 친구에게 귓속말로 알려 주세요.</li>
@@ -678,10 +709,10 @@ const P={
 };
 const F=k=>`img/${k}_face.webp`, B=k=>`img/${k}.webp`;
 const ROLES=[
-  {k:'listen',p:'linh',ko:'청취',d:'김 선생님 음성 답장'},
-  {k:'doc',p:'hao',ko:'문서',d:'운영진 공지'},
-  {k:'field',p:'solongo',ko:'현장',d:'안내판 사진'},
-  {k:'analysis',p:'aye',ko:'분석',d:'단톡방 기록'}
+  {k:'listen',p:'linh',ko:'음성 듣기',ic:'🎧',d:'김 선생님 음성 답장'},
+  {k:'doc',p:'hao',ko:'공지 읽기',ic:'📄',d:'운영진 공지'},
+  {k:'field',p:'solongo',ko:'사진 보기',ic:'📷',d:'안내판 사진'},
+  {k:'analysis',p:'aye',ko:'단톡방 읽기',ic:'💬',d:'단톡방 기록'}
 ];
 const RP=k=>(ROLES.find(r=>r.k===k)||ROLES[0]).p;
 /* 역할별 링크: 게임 주소 뒤에 #lin, #hao, #solongo, #aye */
@@ -786,25 +817,25 @@ function playVoice(kind){
 }
 
 function clueHTML(k){
-  if(k==='listen') return `<div class="card rk" style="border-color:${COLOR.listen}"><h3 class="ch">${propBadge('listen',36)} 린의 헤드폰 · 김 선생님의 음성 답장</h3>
+  if(k==='listen') return `<div class="card rk clue" style="border-color:${COLOR.listen}"><h3 class="ch">${propBadge('listen',36)} 린의 헤드폰 · 김 선생님의 음성 답장</h3>
     <div style="font-size:14px;color:var(--soft)">18:35 · 제이슨이 “나 버스라서 못 들어. 대신 들어 줘!” 하고 린에게 보낸 음성</div>
     <div class="row"><button class="btn ${PLAYING?'red':''}" id="p1" type="button" aria-pressed="${PLAYING}">${PLAYING?'■ 정지':S.plays?'▶ 다시 듣기':'▶ 듣기'}</button><span class="spd" role="group" aria-label="말하기 속도"><button type="button" data-spd="slow" aria-pressed="${(S.spd||'slow')==='slow'}">🐢 천천히</button><button type="button" data-spd="norm" aria-pressed="${S.spd==='norm'}">보통 속도</button></span></div>
     ${EARASK?`<div class="earask" role="alertdialog" aria-labelledby="earq"><div class="earic" aria-hidden="true">🎧</div><div><b id="earq">이어폰을 꼈나요?</b><p>이 소리는 나만 들어야 해요. 팀원에게 들리면 안 돼요!</p>
       <div class="row"><button class="btn red" id="earYes" type="button">꼈어요, 듣기 시작</button><button class="btn ghost" id="earNo" type="button">아직이에요</button></div>
       <small>이어폰이 없으면 팀에서 조금 떨어진 곳에 가서 작은 소리로 들으세요.</small></div></div>`:''}
     <div style="font-size:15px;color:var(--soft)">${TTS_OFF?'이 화면에서는 읽어 주기가 꺼져 있어요. 아티팩트의 권한 메뉴에서 켜 주세요.':PLAYING?'듣는 중이에요. 다시 누르면 멈춰요.':'여러 번 들을 수 있어요. 잘 안 들리면 🐢 천천히로 다시 들어 보세요.'}</div></div>`;
-  if(k==='doc') return `<div class="card rk" style="border-color:${COLOR.doc}"><h3 class="ch">${propBadge('doc',36)} 민수의 수첩 · 운영진 공지 캡처</h3>
+  if(k==='doc') return `<div class="card rk clue" style="border-color:${COLOR.doc}"><h3 class="ch">${propBadge('doc',36)} 민수의 수첩 · 운영진 공지 캡처</h3>
     <div class="msgs">${bub('staff','축제 운영팀 공지방 · 18:20','<b>[결승 안내]</b><br>결승 무대는 중앙광장입니다. 19:00에 시작합니다.<br>비가 내리면 결승 무대를 학생회관 2층으로 옮깁니다.')}</div></div>`;
-  if(k==='field') return `<div class="card rk" style="border-color:${COLOR.field}"><h3 class="ch">${propBadge('field',36)} 지아의 카메라 · 안내판 사진 (18:37)</h3>
+  if(k==='field') return `<div class="card rk clue" style="border-color:${COLOR.field}"><h3 class="ch">${propBadge('field',36)} 지아의 카메라 · 안내판 사진 (18:37)</h3>
     <div class="signs" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="sign">학생회관 앞<small>결승팀 대기실 → 학생회관 2층</small></div><div class="sign">본관 2층<small>강의실 201~210</small></div></div></div>`;
-  return `<div class="card rk" style="border-color:${COLOR.analysis}"><h3 class="ch">${propBadge('analysis',36)} 아리의 돋보기 · 단톡방 기록</h3>
+  return `<div class="card rk clue" style="border-color:${COLOR.analysis}"><h3 class="ch">${propBadge('analysis',36)} 아리의 돋보기 · 단톡방 기록</h3>
     <div class="msgs">${bub('yuting','마리코 · 18:40','줄리앙이 2층으로 오랬대. 장소 바뀌었어.')}${bub('jayden','제이슨 · 18:41','어디 2층? 나 아직 버스야 ㅠㅠ')}${bub('yuting','마리코 · 18:42','몰라 ㅠ 줄리앙이 그랬대.')}</div>
     <div style="font-size:14px;color:var(--soft)">줄리앙은 18:30 이후로 단톡방에 아무 말도 하지 않았어요.</div></div>`;
 }
 function missionHTML(k){
   const m=WR[k], ok=S.wOk[k], pick=(S.wPick||{})[k];
-  return `<div class="mission" data-m="${k}" style="border-color:${COLOR[k]};border-width:3px">
-    <div class="mh">${propBadge(k,34)}<div><div class="mt">MISSION. ${m.title}</div><div class="ms">전달 문장 고르기 미션</div></div></div>
+  return `<div class="mission task" data-m="${k}">
+    <div class="mh"><span class="tk" aria-hidden="true">🎯</span><div><div class="mt">미션 · 친구에게 전할 문장 고르기</div><div class="ms">단서 자료를 보고, 친구에게 말할 문장을 고르세요.</div></div></div>
     <div class="ctx">${m.ask}</div>
     ${ok?`<div class="show">${esc(WOPT[k].find(o=>o.ok).t)}</div><div class="fb ok">좋아요! 이 문장을 팀원에게 귓속말로 전해 주세요.</div>`:
      `<div class="wopts">${WOPT[k].map((o,i)=>`<button type="button" class="wopt${pick===i?' no':''}" data-wo="${k}" data-i="${i}">${String.fromCharCode(9312+i)} ${esc(o.t)}</button>`).join('')}</div>
@@ -821,7 +852,7 @@ function wireMissions(){
 function say1(t){const el=document.createElement('div');el.className='fb no';el.style.cssText='position:absolute;left:50%;top:50px;transform:translateX(-50%);z-index:9;font-size:18px;max-width:90%;background:#fffaf0;box-shadow:4px 4px 0 #2b2622';el.textContent=t;$('#stage').appendChild(el);setTimeout(()=>el.remove(),4000);}
 const V=[],W=[];
 let T15=null;
-const CAST_D=[['linh','린','청취 탐정','#ff9d8f'],['hao','민수','문서 탐정','#b9b4ff'],['solongo','지아','현장 탐정','#8fc4ff'],['aye','아리','분석 탐정','#ffd66b'],['jayden','제이슨','팀장','#5fd6cf'],['yuting','마리코','소식을 전한 친구','#5fd6cf'],['lucas','줄리앙','억울한 친구','#5fd6cf']];
+const CAST_D=[['linh','린','음성 듣기','#ff9d8f'],['hao','민수','공지 읽기','#b9b4ff'],['solongo','지아','사진 보기','#8fc4ff'],['aye','아리','단톡방 읽기','#ffd66b'],['jayden','제이슨','팀장','#5fd6cf'],['yuting','마리코','소식을 전한 친구','#5fd6cf'],['lucas','줄리앙','억울한 친구','#5fd6cf']];
 const CAST=()=>`<div class="cast" role="img" aria-label="별빛 팀 일곱 명: 린, 민수, 지아, 아리, 제이슨, 마리코, 줄리앙">${CAST_D.map((c,i)=>{
   const q=i<5?`<span class="qm" style="--d:${1.9+i*.12}s">?</span>`:'';
   const bub=i===5?`<span class="bub b1">줄리앙이 2층으로 오랬대!</span>`:i===6?`<span class="bub b2">응? 2층?</span>`:'';
@@ -833,19 +864,19 @@ V[0]=()=>!S.seen?TITLE():`<div class="open">${DOODLE}
     <div class="o-face"><img src="${F('lucas')}" alt="고개를 숙인 줄리앙"><span class="o-dots">…</span><div class="o-name">줄리앙</div><div class="o-ask">줄리앙이 정말 그렇게 말했을까?</div></div>
     <div class="o-chat"><div class="o-room">별빛 🌟 결승팀</div>${bub('yuting','마리코','줄리앙이 2층으로 오랬대. 장소 바뀌었어.')}<div class="o-meta">18:40</div></div>
   </div>
-  <div class="o-pick" id="roles">${ROLES.map(r=>`<button type="button" data-k="${r.k}" aria-pressed="${S.role===r.k}" style="background:${COLOR[r.k]}">${propBadge(r.k,30)}${P[r.p].n}</button>`).join('')}</div>
+  <div class="o-pick" id="roles">${ROLES.map(r=>`<button type="button" data-k="${r.k}" aria-pressed="${S.role===r.k}" style="background:${COLOR[r.k]}">${propBadge(r.k,30)}<span class="rk2"><b>${P[r.p].n}</b><small>${r.ko}</small></span></button>`).join('')}</div>
   <div class="o-go"><label class="teampick">우리 팀 <select id="teamPick" aria-label="우리 팀 번호"><option value="">선택</option>${Array.from({length:10},(_,i)=>String(i+1)).map(t=>`<option ${S.team===t?'selected':''}>${t}</option>`).join('')}</select> 팀</label><button class="btn red" id="go" type="button" ${S.role&&S.team?'':'disabled'}>미션 시작 ▶</button></div>
   ${S.role&&S.team?'':`<div class="o-need">${!S.role&&!S.team?'역할과 팀 번호를 고르면 시작할 수 있어요':!S.role?'역할을 골라 주세요':'팀 번호를 골라 주세요'}</div>`}
 </div>`;
-W[0]=()=>{const tp=$('#teamPick');if(tp)tp.onchange=()=>{S.team=tp.value;save();render();};const tg=$('#titleGo');if(tg){tg.onclick=()=>{S.seen=true;save();render();};return;}const rl=$('#roles');if(rl)rl.onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;S.role=b.dataset.k;save();render();};$('#go').onclick=()=>{clearInterval(T15);if(!S.t0)S.t0=Date.now();go(1);};};
+W[0]=()=>{const tp=$('#teamPick');if(tp)tp.onchange=()=>{S.team=tp.value;save();render();};const tg=$('#titleGo');if(tg){tg.onclick=()=>{S.seen=true;save();render();};return;}const rl=$('#roles');if(rl)rl.onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;S.role=b.dataset.k;save();render();};$('#go').onclick=()=>{const start=()=>{clearInterval(T15);if(!S.t0)S.t0=Date.now();go(1);};if(S.howSeen||S.demo)start();else howBox(start);};};
 
 V[1]=()=>`<div class="layer"><img class="sprite" src="${B(RP(S.role))}" alt=""><div class="panel">
   ${bub('yuting','마리코 · 단톡방 18:40','줄리앙이 2층으로 오랬대. 장소 바뀌었어.')}
   ${bub('jayden','제이슨 (팀장) · 18:41','어디 2층? 나 아직 버스야 ㅠㅠ')}
-  <h2>① 내 단서 보기 · ${S.demo?'모든 단서 (시연)':(()=>{const r=ROLES.find(x=>x.k===S.role);return r.ko+' 탐정 '+P[r.p].n;})()}</h2>
+  <h2>① 내 단서 보기 · ${S.demo?'모든 단서 (시연)':(()=>{const r=ROLES.find(x=>x.k===S.role);return P[r.p].n+' ('+r.ic+' '+r.ko+')';})()}</h2>
   ${(S.demo?ROLES.map(r=>r.k):[S.role].concat(S.extra)).map(k=>`<div class="pair">${clueHTML(k)}${missionHTML(k)}</div>`).join('')}
   ${S.demo?'':`<div class="extra"><span>팀원이 3명이라 카드를 한 장 더 받았나요?</span>${ROLES.filter(r=>r.k!==S.role&&!S.extra.includes(r.k)).map(r=>`<button type="button" data-x="${r.k}"><img src="${F(r.p)}" alt="">${propBadge(r.k,22)} ＋ ${P[r.p].n} 역할 더 맡기</button>`).join('')}</div>`}
-  <div class="rule" style="font-size:17px">② 고개를 들고 팀원에게 귓속말로 알려 주세요. “언제 나온 말이에요?” “직접 들었어요?”도 물어보세요.</div>
+  ${IHINT()}<div class="rule" style="font-size:17px">② 고개를 들고 팀원에게 귓속말로 알려 주세요. “언제 나온 말이에요?” “직접 들었어요?”도 물어보세요.</div>
   <button class="btn" id="next" type="button" ${S.demo||S.wOk[S.role]?'':'disabled'}>③ 장소 고르러 가기 ▶</button>
   ${S.demo||S.wOk[S.role]?'':'<div class="cast-note">전달 문장 고르기 미션을 풀면 다음으로 갈 수 있어요.</div>'}</div></div>`;
 W[1]=()=>{wireMissions();document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{const x=b.dataset.x;if(S.extra.includes(x))return;askBox('선생님께 카드를 한 장 더 받았나요?','팀원이 3명일 때만 선생님이 카드를 한 장 더 줘요. 받은 카드가 '+P[RP(x)].n+' 카드일 때만 눌러 주세요.','네, 받았어요','아니요',()=>{if(!S.extra.includes(x))S.extra.push(x);save();render();});});const startListen=()=>{S.plays++;save();playVoice(S.plays<=1?'noisy':'half');render();};
@@ -857,7 +888,7 @@ W[1]=()=>{wireMissions();document.querySelectorAll('[data-x]').forEach(b=>b.oncl
 
 const BLD=[['학생회관 2층','#f0c3b8'],['중앙광장','#f2d89a'],['본관 2층','#d6d0ef'],['도서관 2층','#c9d6e8']];
 V[2]=()=>`<div class="layer"><div class="panel"><h2>미션 1 · 지금 어디로 가야 할까?</h2>${pcHTML()}
-  <div class="tip"><b>물어보기</b> “그건 언제 나온 말이에요?” “비가 오면 옮긴다는 거예요, 벌써 옮겼다는 거예요?” “직접 들었어요?”</div>
+  <div class="tip"><b>물어보기</b> “그건 언제 나온 말이에요?” “비가 오면 옮긴다는 거예요, 벌써 옮겼다는 거예요?” “직접 들었어요?”</div>${IHINT()}
   ${CMAP()}<div id="mw" hidden></div><div id="ms" hidden></div>
   <div id="fb">${S.m1?'<div class="fb ok">맞아요! 비가 안 와서 무대는 중앙광장 그대로예요. 대기실만 학생회관 2층이에요.</div>':''}</div>
   <div class="row"><button class="btn ghost" id="back" type="button">◀ 내 단서 다시 보기</button>${S.m1?'<button class="btn red" id="next" type="button">대기실 도착 ▶ 미션 2</button>':'<button class="btn red" id="chk" type="button">이곳으로 출발!</button>'}</div>
@@ -870,8 +901,8 @@ W[2]=()=>{wirePC();wireMap();
   const c=$('#chk');if(c)c.onclick=()=>{let m='';
     if(!S.w||!S.s)m='두 곳을 모두 고르세요.';
     else if(S.s==='학생회관 2층')m='지금 비가 내리고 있어요? 공지는 ‘비가 내리면’ 옮긴다는 말이에요. 린에게 김 선생님이 날씨와 무대에 대해 뭐라고 했는지 물어보세요.';
-    else if(S.s!=='중앙광장')m='원래 결승 무대가 어디인지 민수(문서 탐정)에게 물어보세요.';
-    else if(S.w!=='학생회관 2층')m=`${S.w}? 대기실이 어느 건물인지 지아(현장 탐정)에게 물어보세요.`;
+    else if(S.s!=='중앙광장')m='원래 결승 무대가 어디인지 민수(공지 읽기)에게 물어보세요.';
+    else if(S.w!=='학생회관 2층')m=`${S.w}? 대기실이 어느 건물인지 지아(사진 보기)에게 물어보세요.`;
     if(S.firstTry.m1===undefined)S.firstTry.m1=!m;
     if(m){S.m1tries=(S.m1tries||0)+1;$('#fb').innerHTML=`<div class="fb no">${esc(m)}${S.m1tries>=3?'<br>세 번 틀렸어요. 손을 들어 선생님께 도움을 요청하세요.':''}</div>`;save();pcTimer();return;}
     S.m1=true;S.m1Left=leftSec();save();render();};
@@ -903,6 +934,7 @@ V[3]=()=>`<div class="layer"><div class="panel"><div class="m2head"><h2>미션 2
    bub('yuting','','직접은 아니에요… 지나가다가 다른 팀 친구가 “줄리앙이 2층으로 오래”라고 하는 걸 들었어요. ‘공연장’이라고 했는지는 잘 모르겠어요.','say')}
   ${S.q&&!S.clsOk?`<h3>각 문장은 확인된 말일까요?</h3><div class="ins clsins">누가 직접 말했거나 기록에 있으면 ‘확인됨’을 고르세요.</div><div class="cls">${CL.map(([t],j)=>`<div class="clrow"><span>${t}</span><span class="opts"><button type="button" class="opt" data-c="${j}-1" aria-pressed="${S.cls[j]===1}">확인됨</button><button type="button" class="opt" data-c="${j}-0" aria-pressed="${S.cls[j]===0}">확인 안 됨</button></span>${S.clsTry&&S.cls[j]!==undefined?(S.cls[j]===CL[j][1]?'':'<div class="clr no">✘ '+CLWHY[j]+'</div>'):''}</div>`).join('')}</div>
    <button class="btn" id="clsChk" type="button">확인</button><div id="fb"></div>`:''}
+  ${S.sent?'':IHINT()}
   ${S.clsOk?`<h3>단톡방에 다시 알려 줄 메시지를 만드세요</h3><div class="ins">질문마다 알맞은 답을 하나씩 고르세요.</div>${S.sent?`<div class="show"><b>확실하게 알게 된 것</b><br>${esc(S.msgA)}<br><b>아직 모르는 것</b><br>${esc(S.msgB)}</div><div class="fb ok">보냈어요!</div><button class="btn red" id="next" type="button">줄리앙의 이야기 듣기 ▶</button>`:MSGUI()}`:''}
   </div></div>`;
 W[3]=()=>{
@@ -927,7 +959,7 @@ V[4]=()=>{const both=PAIRS.every(p=>S.found.includes(p.id));return `<div class="
   ${!S.relay?bub('lucas','줄리앙','저는 친구한테 “대기실이 2층으로 바뀌었대”라고만 했어요. 공연장 얘기는 안 했어요.','say'):''}
   ${!S.relay?`<h3>뜻이 달라지게 만든 가장 중요한 말을 하나씩 누르세요</h3>
   ${PAIRS.map(p=>`<div class="card">${bub(p.from[0],p.from[1],'<div class="toks">'+p.toks.map((t,j)=>`<button type="button" class="tok ${S.found.includes(p.id)&&j===p.key?'on':''}" data-p="${p.id}-${j}">${t}</button>`).join('')+'</div>')}${bub(p.to[0],p.to[1],p.to[2])}</div>`).join('')}
-  <div id="fb">${both?'<div class="fb ok">‘비가 내리면’이 빠지자 조건이 사실이 되었고, ‘대기실이’가 빠지자 대기실 이야기가 모든 장소 이야기가 되었어요.</div>':''}</div>`:''}
+  ${both?'':IHINT()}<div id="fb">${both?'<div class="fb ok">‘비가 내리면’이 빠지자 조건이 사실이 되었고, ‘대기실이’가 빠지자 대기실 이야기가 모든 장소 이야기가 되었어요.</div>':''}</div>`:''}
   ${both&&!S.relay?`<h3>어떻게 전했어야 할까요?</h3><div class="opts" id="rl">${['대기실만 학생회관 2층으로 바뀌었대. 무대는 비가 내리면 옮기는데, 지금은 중앙광장 그대로래.','장소가 학생회관 2층으로 바뀌었대.','비가 내려서 무대를 학생회관 2층으로 옮겼대.'].map((t,j)=>`<button type="button" class="opt" data-r="${j}">${t}</button>`).join('')}</div><div id="fb2"></div>`:''}
   ${S.relay?`${bub('yuting','','줄리앙 씨, 미안해요. 직접 들은 것도 아닌데 “줄리앙이 2층으로 오래.”, “장소 바뀌었대.”라고 사실처럼 전했어요.','say')}${bub('lucas','','괜찮아요. 저도 앞으로 ‘대기실이’라고 더 분명하게 말할게요.','say')}${bub('jayden','','좋아, 다 같이 중앙광장으로 가자!','say')}
    <div class="rule">전해 들은 말은 ‘-대요’로, 확인된 것과 확인되지 않은 것은 구별해서 말해요.</div>
@@ -949,7 +981,7 @@ const PGOAL={1:'내 단서를 팀원에게 귓속말로 알려 주기',2:'진짜
 function addPlayerCard(){
   if(!S.sc||!S.role)return;const layer=document.querySelector('#stage .layer');if(!layer)return;
   const r=ROLES.find(x=>x.k===S.role);const el=document.createElement('aside');el.className='pcard';el.setAttribute('aria-label','플레이어');
-  el.innerHTML=`<div class="ph"><small>플레이어</small><b>${P[r.p].n} · ${r.ko} 탐정</b></div><div class="pimg"><img src="${B(r.p)}" alt="${P[r.p].n}"></div>
+  el.innerHTML=`<div class="ph"><small>플레이어</small><b>${P[r.p].n} · ${r.ic} ${r.ko}</b></div><div class="pimg"><img src="${B(r.p)}" alt="${P[r.p].n}"></div>
    <div class="pinfo">${propBadge(r.k,26)}<b>소품</b><span>${PNAME[r.k]}</span><span></span><b>특기</b><span>${SKILL[r.k]}</span><span></span><b>목표</b><span>${PGOAL[S.sc]||''}</span></div>`;
   layer.insertBefore(el,layer.firstChild);
 }
@@ -961,7 +993,7 @@ function pcOpts(k){const w=WOPT[k]||[];const ok=w.find(o=>o.ok);const bad=w.filt
 function pcDone(){return !!(S.demo||S.m1||pcRoles().every(k=>(S.pcOk||{})[k]));}
 function pcHTML(){if(pcDone())return '';const now=Date.now();
   return `<div class="pcbox"><div class="pchead"><b>먼저, 팀원이 알려 준 말을 확인해요</b><span>친구가 귓속말로 알려 준 내용을 고르세요. 잘 모르면 그 친구에게 다시 물어보세요.</span></div>${pcRoles().map(k=>{const r=ROLES.find(x=>x.k===k),nm=P[r.p].n,ok=(S.pcOk||{})[k],until=(S.pcLock||{})[k]||0,lock=until>now;
-    return `<div class="pcq"><div class="pcw"><img src="${F(r.p)}" alt=""><span><b>${nm}(${r.ko} 탐정)</b>이 뭐라고 했어요?</span></div>${ok?`<div class="fb ok">✔ ${esc(WOPT[k].find(o=>o.ok).t)}</div>`:
+    return `<div class="pcq"><div class="pcw"><img src="${F(r.p)}" alt=""><span><b>${nm}(${r.ko})</b>이 뭐라고 했어요?</span></div>${ok?`<div class="fb ok">✔ ${esc(WOPT[k].find(o=>o.ok).t)}</div>`:
       `<div class="wopts">${pcOpts(k).map((o,j)=>`<button type="button" class="wopt" data-pc="${k}-${j}" ${lock?'disabled':''}>${esc(o.t)}</button>`).join('')}</div>${lock?`<div class="fb no">아니에요. ${nm}에게 다시 물어보세요. <span class="pcwait" data-until="${until}"></span></div>`:''}`}</div>`;}).join('')}</div>`;}
 function pcTick(){if(S.sc!==2){clearInterval(PC_T);PC_T=null;return;}const now=Date.now();let again=false;
   document.querySelectorAll('.pcwait').forEach(s=>{const l=Math.ceil((+s.dataset.until-now)/1000);if(l>0){s.textContent='('+l+'초 뒤에 다시 고를 수 있어요)';again=true;}});
@@ -1010,7 +1042,7 @@ function wireMap(){const m=$('#cmap');if(!m)return;
   const pick=g=>{const n=g.dataset.n,mode=S.mapMode||'w';if(mode==='w')S.w=n;else S.s=n;redraw();};
   m.querySelectorAll('.cb').forEach(g=>{g.onclick=()=>pick(g);g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(g);}};});}
 function go(n){S.sc=n;save();render();}
-function fhintSync(){let b=document.getElementById('fhint');if(!b){b=document.createElement('button');b.id='fhint';b.type='button';b.className='fhint';b.innerHTML='💡 힌트';b.setAttribute('aria-label','힌트 보기');b.onclick=()=>{const h=document.getElementById('hint');if(h)h.click();};document.body.appendChild(b);addEventListener('scroll',fhintPos,{passive:true});addEventListener('resize',fhintPos);}b.hidden=!(S.sc>=1&&S.sc<=4)||!!document.getElementById('hintBox');fhintPos();}
+function fhintSync(){let b=document.getElementById('fhint');if(!b){b=document.createElement('button');b.id='fhint';b.type='button';b.className='fhint';b.innerHTML='📝 내 수첩';b.setAttribute('aria-label','내 수첩 보기');b.onclick=openNote;document.body.appendChild(b);addEventListener('scroll',fhintPos,{passive:true});addEventListener('resize',fhintPos);}b.hidden=!(S.sc>=1&&S.sc<=4)||!!document.getElementById('hintBox')||!!document.getElementById('noteBox');fhintPos();}
 function fhintPos(){const b=document.getElementById('fhint');if(!b||b.hidden)return;const tp=document.getElementById('tp'),fr=document.querySelector('.frame');let top=12,right=14;if(fr){const r=fr.getBoundingClientRect();right=Math.max(14,innerWidth-r.right+12);}if(tp&&!tp.hidden){const r=tp.getBoundingClientRect();if(r.bottom>0)top=Math.max(12,r.bottom+8);right=Math.max(8,innerWidth-r.right);}b.style.top=top+'px';b.style.right=right+'px';}
 function render(){setTimeout(fhintSync,0);
   [...$('#steps').children].forEach((s,i)=>s.classList.toggle('on',S.sc===1?i<=1:S.sc===2?i===2:false));
@@ -1131,13 +1163,39 @@ const HSTEP={
  4:['뜻이 바뀐 말을 찾아보세요. 먼저 ‘비가 내리면’을 찾아보세요.','이번에는 ‘대기실이’를 찾아보세요. 무엇으로 바뀌었어요?']};
 function hintList(){const L=(HSTEP[S.sc]||[HINT[S.sc]||'']).filter(h=>!(Array.isArray(h)&&h[0]===S.role)).map(h=>Array.isArray(h)?h[1]:h);return L.length?L:[HINT[S.sc]||''];}
 function hintShow(d){const L=hintList();S.hs=S.hs||{};const i=Math.min(S.hs[S.sc]||0,L.length-1);d.querySelector('p').textContent=L[i];d.querySelector('.hnum').textContent=L.length>1?`힌트 ${i+1} / ${L.length}`:'';const nx=d.querySelector('#hintNext');nx.hidden=i>=L.length-1;}
+
+function howBox(onGo){if($('#howBox'))return;const r=ROLES.find(x=>x.k===S.role)||ROLES[0];const d=document.createElement('div');d.id='howBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','howT');
+  d.innerHTML=`<div class="howcard"><div class="hbar"><b id="howT">게임 방법</b><span>3단계</span></div>
+  <div class="howme"><img src="${F(r.p)}" alt=""><div><small>나의 역할</small><b>${P[r.p].n} · ${r.ic} ${r.ko}</b><span>내 단서: ${esc(r.d)} · 다른 사람은 이 단서를 몰라요!</span></div></div>
+  <ol class="howst"><li><span class="n">1</span><div><b>📱 내 단서 보기</b><span>내 화면만 봐요. 친구 화면은 보지 마세요.</span></div></li>
+  <li><span class="n">2</span><div><b>🤫 친구에게 귓속말로 알려 주기</b><span>알게 된 것을 누가 말했는지 넣어서 전해요.</span><em>예) “김 선생님이 무대는 그대로래요.”</em></div></li>
+  <li><span class="n">3</span><div><b>🗺️ 같이 장소 고르기</b><span>친구들의 말을 모아서 진짜 장소를 찾아요.</span></div></li></ol>
+  <div class="howtip">막히면 <b>💡 힌트</b>, 잊어버리면 <b>📝 내 수첩</b>을 누르세요.</div>
+  <button class="btn red" id="howGo" type="button">알겠어요, 시작! ▶</button></div>`;
+  document.body.appendChild(d);const b=d.querySelector('#howGo');b.focus();b.onclick=()=>{d.remove();S.howSeen=true;save();onGo();};}
+
+function noteHTML(){const me=ROLES.find(x=>x.k===S.role);const mine=[S.role].concat(S.extra||[]).filter(Boolean);
+  const okT=k=>((WOPT[k]||[]).find(o=>o.ok)||{}).t||'';
+  const sec=(t,body)=>`<div class="nsec"><h4>${t}</h4>${body}</div>`;
+  const li=(img,txt,dim)=>`<li class="${dim?'dim':''}">${img?`<img src="${F(img)}" alt="">`:''}<span>${txt}</span></li>`;
+  let h=sec('🔎 내 단서',`<ul>${mine.map(k=>{const r=ROLES.find(x=>x.k===k);return (S.wOk||{})[k]?li(r.p,`<b>${P[r.p].n}</b> ${esc(okT(k))}`):li(r.p,`<b>${P[r.p].n}</b> ${esc(r.d)} — 아직 전할 문장을 고르지 않았어요.`,1);}).join('')}</ul>`);
+  const others=ROLES.map(r=>r.k).filter(k=>!mine.includes(k));
+  h+=sec('👂 친구에게 들은 말',`<ul>${others.map(k=>{const r=ROLES.find(x=>x.k===k);return (S.pcOk||{})[k]?li(r.p,`<b>${P[r.p].n}</b> ${esc(okT(k))}`):li(r.p,`<b>${P[r.p].n}</b> 아직 확인하지 않았어요. ${P[r.p].n}에게 물어보세요.`,1);}).join('')}</ul>`);
+  if(S.m1)h+=sec('📍 찾은 장소',`<ul>${li('',`🚪 대기 장소: <b>${esc(S.w)}</b>`)}${li('',`🎤 결승 무대: <b>${esc(S.s)}</b>`)}</ul>`);
+  if(S.clsOk&&typeof CL!=='undefined')h+=sec('✔ 확인된 말',`<ul>${CL.filter(c=>c[1]).map(c=>li('',esc(c[0]))).join('')}</ul>`);
+  return h;}
+function openNote(){if($('#noteBox'))return;const d=document.createElement('div');d.id='noteBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','noteT');
+  d.innerHTML=`<div class="notecard"><div class="hbar"><b id="noteT">📝 내 수첩</b><span>알게 된 것이 자동으로 모여요</span></div><div class="nbody">${noteHTML()}</div><button class="btn" id="noteOk" type="button">닫기</button></div>`;
+  document.body.appendChild(d);fhintSync();const ok=d.querySelector('#noteOk');ok.focus();const close=()=>{d.remove();fhintSync();};ok.onclick=close;d.onclick=e=>{if(e.target===d)close();};d.onkeydown=e=>{if(e.key==='Escape')close();};}
+const IHINT=()=>`<button type="button" class="ihint">💡 막히면 힌트 보기</button>`;
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('.ihint')){const h=document.getElementById('hint');if(h)h.click();}});
 /* ---------- 역할 카드 화면 ---------- */
 const linkOf=k=>`${BASE}#${HASH_OF[k]}`;
 function showCards(on){
   $('#cards').hidden=!on; document.querySelector('.frame').hidden=on; document.querySelector('.teacher').hidden=on;
   if(!on||$('#cgrid').dataset.done)return;
   $('#cgrid').innerHTML=ROLES.map(r=>`<article class="rcard">
-    <div class="top" style="background:${COLOR[r.k]}"><img src="${F(r.p)}" alt=""><div style="flex:1"><b>${r.ko} 탐정 · ${P[r.p].n}</b><small>내 소품: ${PNAME[r.k]} · 누가 2층이래? · 별빛 팀</small></div>${propBadge(r.k,56)}</div>
+    <div class="top" style="background:${COLOR[r.k]}"><img src="${F(r.p)}" alt=""><div style="flex:1"><b>${P[r.p].n} · ${r.ic} ${r.ko}</b><small>내 소품: ${PNAME[r.k]} · 누가 2층이래? · 별빛 팀</small></div>${propBadge(r.k,56)}</div>
     <div class="body"><div class="qr" id="qr-${r.k}"></div><div class="task">
       <div class="step">① QR을 찍어요</div><div>② 내 임무: ${TASK[r.k]}</div><div>③ 알게 된 것을 팀원에게 귓속말로 알려 줘요. 다른 사람 화면은 보지 않아요.</div>
       <div class="url">${linkOf(r.k)}</div></div></div></article>`).join('');
@@ -1148,7 +1206,7 @@ function showCards(on){
 }
 $('#cardsBtn').onclick=()=>{location.hash='cards';};
 $('#cardsBack').onclick=()=>{location.hash='';showCards(false);render();};
-$('#copyAll').onclick=()=>{const t=ROLES.map(r=>`${r.ko} 탐정 ${P[r.p].n}: ${linkOf(r.k)}`).join('\n');
+$('#copyAll').onclick=()=>{const t=ROLES.map(r=>`${P[r.p].n} (${r.ko}): ${linkOf(r.k)}`).join('\n');
   navigator.clipboard.writeText(t).then(()=>{$('#copyAll').textContent='복사했어요';}).catch(()=>{$('#copyAll').textContent='복사 안 됨 · 카드의 주소를 쓰세요';});};
 
 /* ---------- 주소로 역할 정하기 ---------- */
@@ -1177,7 +1235,7 @@ async function checkArrive(){try{const r=await fetch(GAS_URL+'?t='+Date.now());c
 function startArrive(){if(ARRIVE==='ok'||ARRIVE_T)return;sendProg(true);ARRIVE='wait';ARRIVE_N=0;setTimeout(checkArrive,2500);ARRIVE_T=setInterval(checkArrive,3000);}
 function sendBox(){if(!IN_CLAUDE&&S.team)return ghSendBox();
   const teams=Array.from({length:10},(_,i)=>String(i+1));
-  const summary=`<div style="font-size:14px;color:var(--soft)">팀 ${esc(S.team||'?')} · ${ROLES.find(r=>r.k===S.role)?.ko||''} 탐정 · 미션 1 ${S.m1Left!=null?mmss(S.m1Left)+' 남김':'-'}</div>`;
+  const summary=`<div style="font-size:14px;color:var(--soft)">팀 ${esc(S.team||'?')} · ${ROLES.find(r=>r.k===S.role)?.ko||''} · 미션 1 ${S.m1Left!=null?mmss(S.m1Left)+' 남김':'-'}</div>`;
   if(S.sentOk) return `<div class="sendbox"><div class="fb ok">선생님께 결과를 보냈어요!</div>${summary}</div>`;
   const can=!!(DB&&MYID&&CAN_WRITE!==false);
   return `<div class="sendbox"><b>선생님께 결과 보내기</b>
@@ -1190,7 +1248,7 @@ function resultCard(){const r=resultData();const L=[["전달 문장", "ordFirst"
   const OX=v=>v===null||v===undefined?'-':v?'O':'X';
   const role=ROLES.find(x=>x.k===S.role);
   return `<div class="rescard"><div class="rch">결과 카드 <small>전송이 안 될 때만 이 카드를 캡처해서 선생님께 보내 주세요</small></div>
-  <div class="rcg"><span>팀</span><b>${esc(S.team)}팀</b><span>역할</span><b>${role?esc(role.ko+' 탐정 '+P[role.p].n):''}</b>
+  <div class="rcg"><span>팀</span><b>${esc(S.team)}팀</b><span>역할</span><b>${role?esc(P[role.p].n+' ('+role.ko+')'):''}</b>
   <span>미션 1 남은 시간</span><b>${r.m1Left!=null?mmss(r.m1Left):'-'}</b>
   ${L.map(([t,k])=>`<span>${t}</span><b class="${r[k]?'o':'x'}">${OX(r[k])}</b>`).join('')}
   <span>처음 고른 전달 문장</span><b class="txt">${esc(r.wFirst||'-')}</b>
@@ -1277,7 +1335,7 @@ $('#introBtn').onclick=()=>{location.hash='intro';};
 $('#introBack').onclick=()=>{location.hash='';showIntro(false);showCards(false);render();};
 /* 미션 2: 내 단서 다시 보기 (창으로 보기, 진행은 그대로) */
 function openMyClue(){if($('#rsBox'))return;const keys=[S.role].concat(S.extra||[]).filter(Boolean);
-  const body=keys.map(k=>k==='listen'?`<div class="card rk" style="border-color:${COLOR.listen}"><h3 class="ch">${propBadge('listen',36)} 린의 헤드폰 · 음성 단서</h3><div>음성은 다시 들을 수 없어요. 들은 내용을 팀원과 함께 확인해 보세요.</div></div>`:clueHTML(k)).join('');
+  const body=keys.map(k=>k==='listen'?`<div class="card rk clue" style="border-color:${COLOR.listen}"><h3 class="ch">${propBadge('listen',36)} 린의 헤드폰 · 음성 단서</h3><div>음성은 다시 들을 수 없어요. 들은 내용을 팀원과 함께 확인해 보세요.</div></div>`:clueHTML(k)).join('');
   const d=document.createElement('div');d.id='rsBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','mcT');
   d.innerHTML='<div class="rscard mccard"><b id="mcT">내 단서</b><div class="mcbody">'+body+'</div><div class="row"><button class="btn" id="mcClose" type="button">닫기</button></div></div>';
   d.querySelectorAll('.mcbody button').forEach(b=>{b.disabled=true;});
@@ -1291,7 +1349,7 @@ function askBox(title,text,yes,no,onYes,onNo){if($('#rsBox'))$('#rsBox').remove(
   d.querySelector('#abYes').onclick=()=>{d.remove();onYes&&onYes();};d.querySelector('#abNo').onclick=()=>{d.remove();onNo&&onNo();};}
 const RO=n=>{const c=n.charCodeAt(n.length-1)-0xAC00,j=c%28;return n+(c>=0&&c<11172&&j&&j!==8?'으로':'로');};
 const IE=n=>{const c=n.charCodeAt(n.length-1)-0xAC00;return n+(c>=0&&c<11172&&c%28?'이에요':'예요');};
-const roleName=k=>{const r=ROLES.find(x=>x.k===k);return r?r.ko+' 탐정 '+P[r.p].n:'';};
+const roleName=k=>{const r=ROLES.find(x=>x.k===k);return r?P[r.p].n+' ('+r.ko+')':'';};
 function route(){
   if(!IN_CLAUDE&&location.hash===T_HASH){try{localStorage.setItem('gh_t','1');}catch(e){}IS_T=true;PREV=false;applyT();history.replaceState(null,'',location.pathname);}
   const h=decodeURIComponent(location.hash.slice(1));
