@@ -676,7 +676,7 @@ const ROLES=[
 const RP=k=>(ROLES.find(r=>r.k===k)||ROLES[0]).p;
 /* 역할별 링크: 게임 주소 뒤에 #lin, #hao, #solongo, #aye */
 const IN_CLAUDE=!!(window.claude&&window.claude.use);
-const T_HASH='#teacher-byeolbit', T_PW='1018';
+const T_HASH='#teacher-byeolbit', T_PW='261127';
 function GH_T(){if(IN_CLAUDE)return false;const ok=location.hash===T_HASH;try{if(ok)localStorage.setItem('gh_t','1');return localStorage.getItem('gh_t')==='1';}catch(e){return ok;}}
 const BASE=location.origin+location.pathname;
 const HASH={lin:'listen',hao:'doc',solongo:'field',aye:'analysis'};
