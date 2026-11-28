@@ -934,7 +934,7 @@ function wireMsg(fill){document.querySelectorAll('[data-ms]').forEach(b=>b.oncli
     if(S.mf[i]===undefined)S.mf[i]=j;S.mp[i]=j;save();render();});
   const sd=$('#send');if(sd)sd.onclick=()=>{fill();S.sent=true;save();render();};}
 function msgFirstWrong(){const mf=S.mf||{};return MSLOT.map((x,i)=>mf[i]!=null&&!x.o[mf[i]][1]?x.o[mf[i]][0]:null).filter(Boolean);}
-V[3]=()=>`<div class="layer"><div class="panel"><div class="m2head"><h2>미션 2 · 확인된 것과 확인되지 않은 것</h2><button class="btn ghost" id="myClue" type="button">내 단서 다시 보기</button></div>
+V[3]=()=>`<div class="layer"><div class="panel"><div class="m2head"><h2>미션 2 · 확실한 말, 아직 모르는 말</h2><button class="btn ghost" id="myClue" type="button">내 단서 다시 보기</button></div>
   ${bub('yuting','','줄리앙이 2층으로 오랬어요. 줄리앙이 잘못 전한 거예요!','say')}
   ${bub('lucas','','…저 그런 말 안 했는데요.')}
   ${!S.q?`<h3>마리코에게 무엇을 확인할까요?</h3><div class="opts" id="qs">${QS.map(([t],j)=>`<button type="button" class="opt" data-j="${j}">${t}</button>`).join('')}</div><div id="fb"></div>`:
