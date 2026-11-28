@@ -589,6 +589,16 @@ h3{color:var(--ink)}
 .hpins{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);display:flex;gap:4px}
 .hp{font-size:clamp(11px,1.6vw,14px);font-weight:900;padding:3px 9px;border-radius:999px;color:#16224a;white-space:nowrap;box-shadow:0 2px 8px #0008}
 .hp.pw{background:#ff9d8f}.hp.ps{background:#7fe3dc}
+
+/* 듣기 속도 · 단계별 힌트 */
+.spd{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle}
+.spd button{border:1.5px solid #c9d3ea;background:#fff;color:#16224a;border-radius:999px;padding:6px 14px;font-weight:800;font-size:15px}
+.spd button[aria-pressed="true"]{background:#16224a;border-color:#16224a;color:#fff}
+.hintcard .hnum{margin-left:auto;font-weight:800;font-size:15px}
+.hintcard .hbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0 20px}
+.hintcard .hbtns .btn{margin:0;align-self:auto}
+.fhint{position:fixed;top:12px;right:14px;z-index:50;border:0;border-radius:999px;background:#f6c445;color:#16224a;font-weight:900;font-size:18px;padding:12px 20px;box-shadow:0 0 0 3px #fff,0 6px 20px #0006;cursor:pointer}
+.fhint:focus-visible{outline:3px solid #16224a;outline-offset:3px}
 </style>
 
 <div class="page">
@@ -736,7 +746,7 @@ const mmss=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart
 function tickTimer(){const box=document.getElementById('tp');if(!box)return;box.hidden=!S.sc;
   const v=document.getElementById('tpv'),l=document.getElementById('tpl');
   if(S.m1){box.className='tpill done';l.textContent='대기실 도착!';v.textContent=mmss(S.m1Left??0)+' 남김';return;}
-  const t=leftSec();box.className='tpill'+(t===0?' over':t<=180?' hurry':'');l.textContent=t===0?'시간 초과! 서둘러요':'결승까지 남은 시간';v.textContent=mmss(t);}
+  const t=leftSec();box.className='tpill'+(t===0?' over':'');l.textContent=t===0?'시간이 지났어요. 끝까지 해 봐요':'결승까지 남은 시간';v.textContent=mmss(t);}
 setInterval(tickTimer,1000);
 const fresh=()=>({team:'',sentOk:false,t0:0,m1Left:null,sc:0,role:'',extra:[],fromLink:false,demo:false,plays:0,m1tries:0,wtxt:{},wOk:{},wHint:{},w:'',s:'',m1:false,q:0,cls:{},clsOk:false,msgA:'',msgB:'',msg:'',sent:false,found:[],relay:false,firstTry:{}});
 if(/[?&]start(=|&|$)/.test(location.search)){try{localStorage.removeItem(KEY);}catch(e){}try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
@@ -763,7 +773,7 @@ function stopMusic(fade){if(!MUS)return;const {m,os}=MUS;MUS=null;try{const t=ac
 let AUD=null;
 function speakFallback(lines,rate,onend){try{speechSynthesis.cancel();lines.forEach((t,i)=>{const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=rate;u.pitch=VPITCH;const ko=speechSynthesis.getVoices().find(v=>/^ko/i.test(v.lang));if(ko)u.voice=ko;if(i===lines.length-1){u.onend=onend;u.onerror=onend;}speechSynthesis.speak(u);});}catch(e){onend();}}
 function speakLines(lines,rate,onend){
-  if(!TTS&&!IN_CLAUDE){try{AUD=new Audio('voice.wav');AUD.preload='auto';AUD.onended=onend;let fell=false;const fb=()=>{if(fell)return;fell=true;AUD=null;speakFallback(lines,rate,onend);};AUD.onerror=fb;const pr=AUD.play();if(pr&&pr.catch)pr.catch(fb);return;}catch(e){}}
+  if(!TTS&&!IN_CLAUDE){try{AUD=new Audio('voice.wav');AUD.preload='auto';AUD.playbackRate=(S.spd||'slow')==='norm'?1:.8;AUD.onended=onend;let fell=false;const fb=()=>{if(fell)return;fell=true;AUD=null;speakFallback(lines,rate,onend);};AUD.onerror=fb;const pr=AUD.play();if(pr&&pr.catch)pr.catch(fb);return;}catch(e){}}
   if(TTS){TTS.speak(lines.map(text=>({text,language:'ko'})),{voice:VVOICE,rate,language:'ko'}).then(onend,err=>{if(err&&err.code==='not_granted'){TTS_OFF=true;}onend();});return;}
   try{speechSynthesis.cancel();lines.forEach((t,i)=>{const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=rate;u.pitch=VPITCH;if(i===lines.length-1){u.onend=onend;u.onerror=onend;}speechSynthesis.speak(u);});}catch(e){onend();}}
 let PLAYING=false, PTIMER=null, EARASK=false;
@@ -771,18 +781,18 @@ function stopVoice(){PLAYID++;try{if(AUD){AUD.onended=null;AUD.onerror=null;AUD.
 function playVoice(kind){
   stopVoice();if(TTS_OFF){render();return;}PLAYING=true;const id=PLAYID;
   const end=()=>{if(id!==PLAYID||!PLAYING)return;PLAYING=false;clearTimeout(PTIMER);stopMusic(2);if(S.sc===1)render();};
-  music();speakLines(VOICE_LINES,VRATE,end);
-  PTIMER=setTimeout(end,40000);
+  music();speakLines(VOICE_LINES,(S.spd||'slow')==='norm'?VRATE:.72,end);
+  PTIMER=setTimeout(end,60000);
 }
 
 function clueHTML(k){
   if(k==='listen') return `<div class="card rk" style="border-color:${COLOR.listen}"><h3 class="ch">${propBadge('listen',36)} 린의 헤드폰 · 김 선생님의 음성 답장</h3>
     <div style="font-size:14px;color:var(--soft)">18:35 · 제이슨이 “나 버스라서 못 들어. 대신 들어 줘!” 하고 린에게 보낸 음성</div>
-    <div class="row"><button class="btn ${PLAYING?'red':''}" id="p1" type="button" ${!PLAYING&&S.plays>=2&&!S.demo?'disabled':''} aria-pressed="${PLAYING}">${PLAYING?'■ 정지':'▶ 듣기'}</button></div>
+    <div class="row"><button class="btn ${PLAYING?'red':''}" id="p1" type="button" aria-pressed="${PLAYING}">${PLAYING?'■ 정지':S.plays?'▶ 다시 듣기':'▶ 듣기'}</button><span class="spd" role="group" aria-label="말하기 속도"><button type="button" data-spd="slow" aria-pressed="${(S.spd||'slow')==='slow'}">🐢 천천히</button><button type="button" data-spd="norm" aria-pressed="${S.spd==='norm'}">보통 속도</button></span></div>
     ${EARASK?`<div class="earask" role="alertdialog" aria-labelledby="earq"><div class="earic" aria-hidden="true">🎧</div><div><b id="earq">이어폰을 꼈나요?</b><p>이 소리는 나만 들어야 해요. 팀원에게 들리면 안 돼요!</p>
       <div class="row"><button class="btn red" id="earYes" type="button">꼈어요, 듣기 시작</button><button class="btn ghost" id="earNo" type="button">아직이에요</button></div>
       <small>이어폰이 없으면 팀에서 조금 떨어진 곳에 가서 작은 소리로 들으세요.</small></div></div>`:''}
-    <div style="font-size:15px;color:var(--soft)">${TTS_OFF?'이 화면에서는 읽어 주기가 꺼져 있어요. 아티팩트의 권한 메뉴에서 켜 주세요.':PLAYING?'듣는 중이에요. 다시 누르면 멈춰요.':S.plays>=2&&!S.demo?'두 번 다 들었어요. 들은 내용을 팀원에게 귓속말로 알려 주세요.':`두 번까지 들을 수 있어요. (남은 횟수 ${2-S.plays}번)`}</div></div>`;
+    <div style="font-size:15px;color:var(--soft)">${TTS_OFF?'이 화면에서는 읽어 주기가 꺼져 있어요. 아티팩트의 권한 메뉴에서 켜 주세요.':PLAYING?'듣는 중이에요. 다시 누르면 멈춰요.':'여러 번 들을 수 있어요. 잘 안 들리면 🐢 천천히로 다시 들어 보세요.'}</div></div>`;
   if(k==='doc') return `<div class="card rk" style="border-color:${COLOR.doc}"><h3 class="ch">${propBadge('doc',36)} 민수의 수첩 · 운영진 공지 캡처</h3>
     <div class="msgs">${bub('staff','축제 운영팀 공지방 · 18:20','<b>[결승 안내]</b><br>결승 무대는 중앙광장입니다. 19:00에 시작합니다.<br>비가 내리면 결승 무대를 학생회관 2층으로 옮깁니다.')}</div></div>`;
   if(k==='field') return `<div class="card rk" style="border-color:${COLOR.field}"><h3 class="ch">${propBadge('field',36)} 지아의 카메라 · 안내판 사진 (18:37)</h3>
@@ -838,8 +848,9 @@ V[1]=()=>`<div class="layer"><img class="sprite" src="${B(RP(S.role))}" alt=""><
   <div class="rule" style="font-size:17px">② 고개를 들고 팀원에게 귓속말로 알려 주세요. “언제 나온 말이에요?” “직접 들었어요?”도 물어보세요.</div>
   <button class="btn" id="next" type="button" ${S.demo||S.wOk[S.role]?'':'disabled'}>③ 장소 고르러 가기 ▶</button>
   ${S.demo||S.wOk[S.role]?'':'<div class="cast-note">전달 문장 고르기 미션을 풀면 다음으로 갈 수 있어요.</div>'}</div></div>`;
-W[1]=()=>{wireMissions();document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{const x=b.dataset.x;if(S.extra.includes(x))return;askBox('선생님께 카드를 한 장 더 받았나요?','팀원이 3명일 때만 선생님이 카드를 한 장 더 줘요. 받은 카드가 '+P[RP(x)].n+' 카드일 때만 눌러 주세요.','네, 받았어요','아니요',()=>{if(!S.extra.includes(x))S.extra.push(x);save();render();});});const startListen=()=>{if(S.plays>=2&&!S.demo)return;S.plays++;save();playVoice(S.plays<=1?'noisy':'half');render();};
+W[1]=()=>{wireMissions();document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{const x=b.dataset.x;if(S.extra.includes(x))return;askBox('선생님께 카드를 한 장 더 받았나요?','팀원이 3명일 때만 선생님이 카드를 한 장 더 줘요. 받은 카드가 '+P[RP(x)].n+' 카드일 때만 눌러 주세요.','네, 받았어요','아니요',()=>{if(!S.extra.includes(x))S.extra.push(x);save();render();});});const startListen=()=>{S.plays++;save();playVoice(S.plays<=1?'noisy':'half');render();};
   const p=$('#p1');if(p)p.onclick=()=>{if(PLAYING){stopVoice();return;}if(!S.earOk&&!S.demo){EARASK=true;render();return;}startListen();};
+  document.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{S.spd=b.dataset.spd;save();try{if(AUD)AUD.playbackRate=S.spd==='norm'?1:.8;}catch(e){}render();});
   const ey=$('#earYes');if(ey)ey.onclick=()=>{EARASK=false;S.earOk=true;save();startListen();};
   const en=$('#earNo');if(en)en.onclick=()=>{EARASK=false;render();};
   $('#next').onclick=()=>{stopVoice();go(2);};};
@@ -999,7 +1010,9 @@ function wireMap(){const m=$('#cmap');if(!m)return;
   const pick=g=>{const n=g.dataset.n,mode=S.mapMode||'w';if(mode==='w')S.w=n;else S.s=n;redraw();};
   m.querySelectorAll('.cb').forEach(g=>{g.onclick=()=>pick(g);g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(g);}};});}
 function go(n){S.sc=n;save();render();}
-function render(){
+function fhintSync(){let b=document.getElementById('fhint');if(!b){b=document.createElement('button');b.id='fhint';b.type='button';b.className='fhint';b.innerHTML='💡 힌트';b.setAttribute('aria-label','힌트 보기');b.onclick=()=>{const h=document.getElementById('hint');if(h)h.click();};document.body.appendChild(b);addEventListener('scroll',fhintPos,{passive:true});addEventListener('resize',fhintPos);}b.hidden=!(S.sc>=1&&S.sc<=4)||!!document.getElementById('hintBox');fhintPos();}
+function fhintPos(){const b=document.getElementById('fhint');if(!b||b.hidden)return;const tp=document.getElementById('tp'),fr=document.querySelector('.frame');let top=12,right=14;if(fr){const r=fr.getBoundingClientRect();right=Math.max(14,innerWidth-r.right+12);}if(tp&&!tp.hidden){const r=tp.getBoundingClientRect();if(r.bottom>0)top=Math.max(12,r.bottom+8);right=Math.max(8,innerWidth-r.right);}b.style.top=top+'px';b.style.right=right+'px';}
+function render(){setTimeout(fhintSync,0);
   [...$('#steps').children].forEach((s,i)=>s.classList.toggle('on',S.sc===1?i<=1:S.sc===2?i===2:false));
   $('#steps').hidden=!(S.sc===1||S.sc===2);
   $('#stage').innerHTML=V[S.sc]();W[S.sc]();
@@ -1109,8 +1122,15 @@ $('#reset').onclick=()=>{if($('#rsBox'))return;const d=document.createElement('d
   document.body.appendChild(d);$('#rsNo').focus();
   $('#rsNo').onclick=()=>d.remove();d.onclick=e=>{if(e.target===d)d.remove();};
   $('#rsYes').onclick=()=>{d.remove();stopVoice();location.hash=location.hash.replace(/^#(teacher|intro|cards)$/,'');reset();window.scrollTo(0,0);};};
-$('#hint').onclick=()=>{if($('#hintBox'))return;const d=document.createElement('div');d.id='hintBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','hintT');d.innerHTML='<div class="hintcard"><div class="hbar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><b id="hintT">아리의 힌트</b></div><div class="hbody"><img alt=""><p></p></div><button class="btn" id="hintOk" type="button">알겠어요</button></div>';d.querySelector('img').src=F('aye');d.querySelector('p').textContent=HINT[S.sc]||'';document.body.appendChild(d);const ok=d.querySelector('#hintOk');ok.focus();const close=()=>{d.remove();$('#hint').focus();};ok.onclick=close;d.onclick=e=>{if(e.target===d)close();};d.onkeydown=e=>{if(e.key==='Escape')close();};S.hintN=(S.hintN||0)+1;save();};
+$('#hint').onclick=()=>{if($('#hintBox'))return;const d=document.createElement('div');d.id='hintBox';d.className='rsbox';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','hintT');d.innerHTML='<div class="hintcard"><div class="hbar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg><b id="hintT">아리의 힌트</b><span class="hnum"></span></div><div class="hbody"><img alt=""><p></p></div><div class="hbtns"><button class="btn ghost" id="hintNext" type="button">다음 힌트 ▶</button><button class="btn" id="hintOk" type="button">알겠어요</button></div></div>';d.querySelector('img').src=F('aye');hintShow(d);d.querySelector('#hintNext').onclick=()=>{S.hs=S.hs||{};S.hs[S.sc]=(S.hs[S.sc]||0)+1;S.hintN=(S.hintN||0)+1;save();hintShow(d);};document.body.appendChild(d);fhintSync();const ok=d.querySelector('#hintOk');ok.focus();const close=()=>{d.remove();fhintSync();$('#hint').focus();};ok.onclick=close;d.onclick=e=>{if(e.target===d)close();};d.onkeydown=e=>{if(e.key==='Escape')close();};S.hintN=(S.hintN||0)+1;save();};
 
+const HSTEP={
+ 1:['먼저 내 단서를 끝까지 보고, 친구에게 전할 문장을 고르세요.','친구가 말해 주면 이렇게 물어보세요. “어디서 나온 말이에요?”','그래도 헷갈리면 이렇게 물어보세요. “직접 들었어요?”'],
+ 2:[['listen','린에게 물어보세요. “지금 비가 오고 있어요?”'],['doc','민수에게 물어보세요. “원래 결승 무대는 어디예요?”'],['field','지아에게 물어보세요. “대기실은 어느 건물이에요?”'],'공지의 ‘비가 내리면’은 ‘지금 비가 와요’라는 뜻이 아니에요. 지금 비가 오는지 다시 확인해 보세요.'],
+ 3:['마리코에게 먼저 물어보세요. “줄리앙 씨한테 직접 들었어요?”','누가 직접 말했거나 기록(음성, 공지, 사진)에 있으면 ‘확인됨’이에요.','“줄리앙이 말했어요”는 누가 직접 들었어요? 직접 들은 사람이 없으면 ‘확인 안 됨’이에요.'],
+ 4:['뜻이 바뀐 말을 찾아보세요. 먼저 ‘비가 내리면’을 찾아보세요.','이번에는 ‘대기실이’를 찾아보세요. 무엇으로 바뀌었어요?']};
+function hintList(){const L=(HSTEP[S.sc]||[HINT[S.sc]||'']).filter(h=>!(Array.isArray(h)&&h[0]===S.role)).map(h=>Array.isArray(h)?h[1]:h);return L.length?L:[HINT[S.sc]||''];}
+function hintShow(d){const L=hintList();S.hs=S.hs||{};const i=Math.min(S.hs[S.sc]||0,L.length-1);d.querySelector('p').textContent=L[i];d.querySelector('.hnum').textContent=L.length>1?`힌트 ${i+1} / ${L.length}`:'';const nx=d.querySelector('#hintNext');nx.hidden=i>=L.length-1;}
 /* ---------- 역할 카드 화면 ---------- */
 const linkOf=k=>`${BASE}#${HASH_OF[k]}`;
 function showCards(on){
