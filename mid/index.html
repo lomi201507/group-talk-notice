@@ -749,7 +749,7 @@ const VVOICE='airy', VRATE=.9, VPITCH=1;
 const KEY='byeolbit-notice-mid-v1';
 /* 중급: 고르기 대신 전달 문장 직접 쓰기 */
 const WR={
-  listen:{title:'음성 분석',ctx:'김 선생님의 음성 답장을 들었습니다. 장소 이름은 음성에 나오지 않았습니다.',
+  listen:{title:'음성 분석',ctx:'김 선생님의 음성을 들었어요. 장소 이름은 안 나와요.',
     ask:'팀원에게 전할 문장으로 가장 알맞은 것을 고르세요.',
     frame:'김 선생님이 지금 비가 ______서 무대는 ______래요. ______만 2층으로 바뀌었대요.',
     model:'김 선생님이 지금 비가 안 와서 무대는 그대로래요. 대기실만 2층으로 바뀌었대요.',
@@ -759,7 +759,7 @@ const WR={
     frame:'공지에 무대는 ______이고, 비가 ______ 학생회관 2층으로 옮긴다고 쓰여 있어요.',
     model:'공지에 무대는 중앙광장이고, 비가 내리면 학생회관 2층으로 옮긴다고 쓰여 있어요.',
     checks:[['원래 무대 (중앙광장)',/중앙\s?광장/],['조건 (비가 내리면 / 비가 오면)',/비가\s?(내리|오)면/],['전하는 말 (-다고 / -대요 / 쓰여 있어요)',/(다고|대요|래요|쓰여)/]]},
-  field:{title:'사진 분석',ctx:'18:37에 찍은 학생회관 앞 안내판: “결승팀 대기실 → 학생회관 2층”',
+  field:{title:'사진 분석',ctx:'학생회관 앞 안내판: “결승팀 대기실 → 학생회관 2층”',
     ask:'팀원에게 전할 문장으로 가장 알맞은 것을 고르세요.',
     frame:'안내판에 ______이 학생회관 2층이라고 쓰여 있어요. 공연 장소에 대한 말은 ______.',
     model:'안내판에 결승팀 대기실이 학생회관 2층이라고 쓰여 있어요. 공연 장소에 대한 말은 없어요.',
@@ -817,20 +817,20 @@ function playVoice(kind){
 }
 
 function clueHTML(k){
-  if(k==='listen') return `<div class="card rk clue" style="border-color:${COLOR.listen}"><h3 class="ch">${propBadge('listen',36)} 린의 헤드폰 · 김 선생님의 음성 답장</h3>
-    <div style="font-size:14px;color:var(--soft)">18:35 · 제이슨이 “나 버스라서 못 들어. 대신 들어 줘!” 하고 린에게 보낸 음성</div>
+  if(k==='listen') return `<div class="card rk clue" style="border-color:${COLOR.listen}"><h3 class="ch">${propBadge('listen',36)} 김 선생님의 음성 메시지</h3>
+    <div style="font-size:15px;color:var(--soft)">제이슨: “나 대신 들어 줘!”</div>
     <div class="row"><button class="btn ${PLAYING?'red':''}" id="p1" type="button" aria-pressed="${PLAYING}">${PLAYING?'■ 정지':S.plays?'▶ 다시 듣기':'▶ 듣기'}</button><span class="spd" role="group" aria-label="말하기 속도"><button type="button" data-spd="slow" aria-pressed="${(S.spd||'slow')==='slow'}">🐢 천천히</button><button type="button" data-spd="norm" aria-pressed="${S.spd==='norm'}">보통 속도</button></span></div>
     ${EARASK?`<div class="earask" role="alertdialog" aria-labelledby="earq"><div class="earic" aria-hidden="true">🎧</div><div><b id="earq">이어폰을 꼈나요?</b><p>이 소리는 나만 들어야 해요. 팀원에게 들리면 안 돼요!</p>
       <div class="row"><button class="btn red" id="earYes" type="button">꼈어요, 듣기 시작</button><button class="btn ghost" id="earNo" type="button">아직이에요</button></div>
       <small>이어폰이 없으면 팀에서 조금 떨어진 곳에 가서 작은 소리로 들으세요.</small></div></div>`:''}
     <div style="font-size:15px;color:var(--soft)">${TTS_OFF?'이 화면에서는 읽어 주기가 꺼져 있어요. 아티팩트의 권한 메뉴에서 켜 주세요.':PLAYING?'듣는 중이에요. 다시 누르면 멈춰요.':'여러 번 들을 수 있어요. 잘 안 들리면 🐢 천천히로 다시 들어 보세요.'}</div></div>`;
-  if(k==='doc') return `<div class="card rk clue" style="border-color:${COLOR.doc}"><h3 class="ch">${propBadge('doc',36)} 민수의 수첩 · 운영진 공지 캡처</h3>
-    <div class="msgs">${bub('staff','축제 운영팀 공지방 · 18:20','<b>[결승 안내]</b><br>결승 무대는 중앙광장입니다. 19:00에 시작합니다.<br>비가 내리면 결승 무대를 학생회관 2층으로 옮깁니다.')}</div></div>`;
-  if(k==='field') return `<div class="card rk clue" style="border-color:${COLOR.field}"><h3 class="ch">${propBadge('field',36)} 지아의 카메라 · 안내판 사진 (18:37)</h3>
-    <div class="signs" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="sign">학생회관 앞<small>결승팀 대기실 → 학생회관 2층</small></div><div class="sign">본관 2층<small>강의실 201~210</small></div></div></div>`;
-  return `<div class="card rk clue" style="border-color:${COLOR.analysis}"><h3 class="ch">${propBadge('analysis',36)} 아리의 돋보기 · 단톡방 기록</h3>
+  if(k==='doc') return `<div class="card rk clue" style="border-color:${COLOR.doc}"><h3 class="ch">${propBadge('doc',36)} 운영진 공지</h3>
+    <div class="msgs">${bub('staff','운영진 · 18:20','<b>[결승 안내]</b><br>결승 무대는 중앙광장입니다.<br>비가 내리면 결승 무대를 학생회관 2층으로 옮깁니다.')}</div></div>`;
+  if(k==='field') return `<div class="card rk clue" style="border-color:${COLOR.field}"><h3 class="ch">${propBadge('field',36)} 학생회관 앞 안내판 사진</h3>
+    <div class="signs" style="grid-template-columns:minmax(0,1fr)"><div class="sign">학생회관 앞<small>결승팀 대기실 → 학생회관 2층</small></div></div></div>`;
+  return `<div class="card rk clue" style="border-color:${COLOR.analysis}"><h3 class="ch">${propBadge('analysis',36)} 단톡방 기록</h3>
     <div class="msgs">${bub('yuting','마리코 · 18:40','줄리앙이 2층으로 오랬대. 장소 바뀌었어.')}${bub('jayden','제이슨 · 18:41','어디 2층? 나 아직 버스야 ㅠㅠ')}${bub('yuting','마리코 · 18:42','몰라 ㅠ 줄리앙이 그랬대.')}</div>
-    <div style="font-size:14px;color:var(--soft)">줄리앙은 18:30 이후로 단톡방에 아무 말도 하지 않았어요.</div></div>`;
+    <div style="font-size:15px;color:var(--soft)">줄리앙은 단톡방에 아무 말도 안 했어요.</div></div>`;
 }
 function missionHTML(k){
   const m=WR[k], ok=S.wOk[k], pick=(S.wPick||{})[k];
