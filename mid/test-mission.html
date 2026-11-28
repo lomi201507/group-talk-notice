@@ -618,13 +618,18 @@ h3{color:var(--ink)}
 .nsec li img{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none}
 .ihint{align-self:flex-start;border:2px solid #f6c445;background:#fff8dc;color:#16224a;font-weight:800;font-size:16px;border-radius:999px;padding:8px 18px;cursor:pointer}
 .ihint:hover{background:#ffefb0}
-.card.clue{position:relative;padding-top:34px!important}
-.card.clue::before{content:"📌 내 단서 · 나만 볼 수 있어요";position:absolute;top:0;left:0;background:var(--navy);color:#fff;font-size:13px;font-weight:800;padding:4px 12px;border-radius:0 0 12px 0}
-.mission.task{background:#f3f6fc!important;border:2px dashed #9fb0d4!important;border-radius:16px;box-shadow:none}
-.mission.task .tk{font-size:26px;line-height:1;flex:none}
-.mission.task .mt{font-size:19px;color:var(--navy)}
-.mission.task .ms b{color:var(--navy)}
+.card.clue{position:relative;padding-top:32px!important;background:#f4f5f8!important;border:1.5px solid #d6dbe6!important;box-shadow:none!important;font-size:15px}
+.card.clue::before{content:"📎 단서 자료 · 나만 볼 수 있어요";position:absolute;top:0;left:0;background:#6b7591;color:#fff;font-size:13px;font-weight:800;padding:4px 12px;border-radius:0 0 12px 0}
+.card.clue h3{font-size:16px;color:#4a5370}.card.clue .prop{transform:scale(.8);opacity:.8}
+.mission.task{position:relative;margin-top:34px;background:#fff!important;border:3px solid #e0544a!important;border-radius:18px;box-shadow:0 8px 24px #e0544a33!important;overflow:visible}
+.mission.task::before{content:"⬇ 단서를 보고 미션을 풀어요";position:absolute;top:-30px;left:50%;transform:translateX(-50%);white-space:nowrap;font-weight:800;font-size:15px;color:#16224a}
+.mission.task .mh{margin:-16px -18px 0;background:#e0544a;color:#fff;padding:12px 18px;border-radius:14px 14px 0 0}
+.mission.task .tk{font-size:28px;line-height:1;flex:none}
+.mission.task .mt{font-size:21px;color:#fff}
+.mission.task .ms{color:#ffe3df!important;font-size:14.5px}
+.mission.task .ctx{font-weight:700}
 .mission.task .show{background:#e6f6f2;border-left-color:#2fb39a}
+@media (min-width:1100px){.pair{grid-template-columns:2fr 3fr!important}.mission.task{margin-top:0}.mission.task::before{content:none}}
 </style>
 
 <div class="page">
@@ -830,7 +835,7 @@ function clueHTML(k){
 function missionHTML(k){
   const m=WR[k], ok=S.wOk[k], pick=(S.wPick||{})[k];
   return `<div class="mission task" data-m="${k}">
-    <div class="mh"><span class="tk" aria-hidden="true">✏️</span><div><div class="mt">할 일 · 친구에게 전할 문장 고르기</div><div class="ms">위의 <b>내 단서</b>를 보고, 친구에게 말할 문장을 고르세요.</div></div></div>
+    <div class="mh"><span class="tk" aria-hidden="true">🎯</span><div><div class="mt">미션 · 친구에게 전할 문장 고르기</div><div class="ms">단서 자료를 보고, 친구에게 말할 문장을 고르세요.</div></div></div>
     <div class="ctx">${m.ask}</div>
     ${ok?`<div class="show">${esc(WOPT[k].find(o=>o.ok).t)}</div><div class="fb ok">좋아요! 이 문장을 팀원에게 귓속말로 전해 주세요.</div>`:
      `<div class="wopts">${WOPT[k].map((o,i)=>`<button type="button" class="wopt${pick===i?' no':''}" data-wo="${k}" data-i="${i}">${String.fromCharCode(9312+i)} ${esc(o.t)}</button>`).join('')}</div>
