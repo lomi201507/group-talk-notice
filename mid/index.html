@@ -589,6 +589,21 @@ h3{color:var(--ink)}
 .hpins{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);display:flex;gap:4px}
 .hp{font-size:clamp(11px,1.6vw,14px);font-weight:900;padding:3px 9px;border-radius:999px;color:#16224a;white-space:nowrap;box-shadow:0 2px 8px #0008}
 .hp.pw{background:#ff9d8f}.hp.ps{background:#7fe3dc}
+
+/* 미션 1 두 화면 */
+.panel h2 .pg{font-size:14px;font-weight:800;color:#5fd6cf;background:#16224a;border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:6px}
+.pcdots{display:flex;gap:10px}
+.pcdots span{position:relative;width:44px;height:44px;border-radius:50%;border:3px solid #d3dcee;overflow:hidden;display:grid;place-items:center;font-weight:900;color:#fff}
+.pcdots span img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.pcdots span i{position:absolute;inset:0;display:grid;place-items:center;background:#2fb37acc;font-style:normal;font-size:22px;color:#fff}
+.pcdots span.ok{border-color:#2fb37a}.pcdots span.ok img{opacity:.35}
+.pcw.big{font-size:18px}.pcw.big img{width:52px;height:52px}
+.pcsum{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.pcsum li{display:flex;gap:8px;align-items:flex-start;background:#f2f6fd;border-radius:12px;padding:8px 10px;font-size:15px}
+.pcsum li img{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:none}
+.m1more{background:#fff;border:1.5px solid #dfe6f3;border-radius:12px;padding:6px 12px}
+.m1more summary{cursor:pointer;font-weight:800;font-size:15px;color:#16224a;padding:4px 0}
+.m1more[open] summary{margin-bottom:6px}
 </style>
 
 <div class="page">
@@ -845,16 +860,22 @@ W[1]=()=>{wireMissions();document.querySelectorAll('[data-x]').forEach(b=>b.oncl
   $('#next').onclick=()=>{stopVoice();go(2);};};
 
 const BLD=[['학생회관 2층','#f0c3b8'],['중앙광장','#f2d89a'],['본관 2층','#d6d0ef'],['도서관 2층','#c9d6e8']];
-V[2]=()=>`<div class="layer"><div class="panel"><h2>미션 1 · 지금 어디로 가야 할까?</h2>${pcHTML()}
-  <div class="tip"><b>물어보기</b> “그건 언제 나온 말이에요?” “비가 오면 옮긴다는 거예요, 벌써 옮겼다는 거예요?” “직접 들었어요?”</div>
+const M1MAP=()=>!!(S.demo||S.m1||(pcDone()&&S.pcGo));
+V[2]=()=>M1MAP()?`<div class="layer"><div class="panel"><h2>미션 1 · 지도에서 고르기 <small class="pg">2/2</small></h2>
   ${CMAP()}<div id="mw" hidden></div><div id="ms" hidden></div>
+  <details class="m1more"><summary>📝 팀원이 알려 준 말 다시 보기</summary>${PCSUM()}</details>
+  <details class="m1more"><summary>❓ 막히면 이렇게 물어보세요</summary><div class="tip">“그건 언제 나온 말이에요?” “비가 오면 옮긴다는 거예요, 벌써 옮겼다는 거예요?” “직접 들었어요?”</div></details>
   <div id="fb">${S.m1?'<div class="fb ok">맞아요! 비가 안 와서 무대는 중앙광장 그대로예요. 대기실만 학생회관 2층이에요.</div>':''}</div>
-  <div class="row"><button class="btn ghost" id="back" type="button">◀ 내 단서 다시 보기</button>${S.m1?'<button class="btn red" id="next" type="button">대기실 도착 ▶ 미션 2</button>':'<button class="btn red" id="chk" type="button">이곳으로 출발!</button>'}</div>
+  <div class="row"><button class="btn ghost" id="back" type="button">◀ 팀원의 말 다시 보기</button>${S.m1?'<button class="btn red" id="next" type="button">대기실 도착 ▶ 미션 2</button>':'<button class="btn red" id="chk" type="button">이곳으로 출발!</button>'}</div>
+  </div></div>`
+ :`<div class="layer"><div class="panel"><h2>미션 1 · 팀원의 말 확인 <small class="pg">1/2</small></h2>${pcHTML()}
+  <div class="row"><button class="btn ghost" id="back" type="button">◀ 내 단서 다시 보기</button>${pcDone()?'<button class="btn red" id="toMap" type="button">지도에서 고르기 ▶</button>':''}</div>
   </div></div>`;
-W[2]=()=>{wirePC();wireMap();
+W[2]=()=>{wirePC();wireMap();const tm=$('#toMap');if(tm)tm.onclick=()=>{S.pcGo=true;save();render();scrollTo(0,0);};
+  if(!M1MAP()){$('#back').onclick=()=>go(1);return;}
   $('#mw').onclick=e=>{const b=e.target.closest('.bld');if(!b)return;S.w=b.dataset.n;save();render();};
   $('#ms').onclick=e=>{const b=e.target.closest('.bld');if(!b)return;S.s=b.dataset.n;save();render();};
-  $('#back').onclick=()=>go(1);
+  $('#back').onclick=()=>{if(S.m1||S.demo){go(1);return;}S.pcGo=false;save();render();scrollTo(0,0);};
   const n=$('#next');if(n)n.onclick=()=>go(3);
   const c=$('#chk');if(c)c.onclick=()=>{let m='';
     if(!S.w||!S.s)m='두 곳을 모두 고르세요.';
@@ -949,10 +970,15 @@ let PC_T=null;
 function pcRoles(){return ROLES.map(r=>r.k).filter(k=>k!==S.role&&!(S.extra||[]).includes(k));}
 function pcOpts(k){const w=WOPT[k]||[];const ok=w.find(o=>o.ok);const bad=w.filter(o=>!o.ok&&!/내용은 맞지만|누구의 말/.test(o.fb)).slice(0,2).map(o=>({t:o.t,ok:0}));if(ok)bad.splice(Math.min(bad.length,({listen:1,doc:2,field:0,analysis:1})[k]??1),0,{t:ok.t,ok:1});return bad;}
 function pcDone(){return !!(S.demo||S.m1||pcRoles().every(k=>(S.pcOk||{})[k]));}
-function pcHTML(){if(pcDone())return '';const now=Date.now();
-  return `<div class="pcbox"><div class="pchead"><b>먼저, 팀원이 알려 준 말을 확인해요</b><span>친구가 귓속말로 알려 준 내용을 고르세요. 잘 모르면 그 친구에게 다시 물어보세요.</span></div>${pcRoles().map(k=>{const r=ROLES.find(x=>x.k===k),nm=P[r.p].n,ok=(S.pcOk||{})[k],until=(S.pcLock||{})[k]||0,lock=until>now;
-    return `<div class="pcq"><div class="pcw"><img src="${F(r.p)}" alt=""><span><b>${nm}(${r.ko} 탐정)</b>이 뭐라고 했어요?</span></div>${ok?`<div class="fb ok">✔ ${esc(WOPT[k].find(o=>o.ok).t)}</div>`:
-      `<div class="wopts">${pcOpts(k).map((o,j)=>`<button type="button" class="wopt" data-pc="${k}-${j}" ${lock?'disabled':''}>${esc(o.t)}</button>`).join('')}</div>${lock?`<div class="fb no">아니에요. ${nm}에게 다시 물어보세요. <span class="pcwait" data-until="${until}"></span></div>`:''}`}</div>`;}).join('')}</div>`;}
+function pcHTML(){const now=Date.now(),ks=pcRoles(),okm=S.pcOk||{};
+  const dots=`<div class="pcdots">${ks.map(k=>{const r=ROLES.find(x=>x.k===k);return `<span class="${okm[k]?'d ok':''}"><img src="${F(r.p)}" alt="">${okm[k]?'<i>✔</i>':''}</span>`;}).join('')}</div>`;
+  if(pcDone()){return `<div class="pcbox"><div class="pchead"><b>✔ 팀원의 말을 모두 확인했어요</b><span>이 내용을 기억하고 지도에서 장소를 고르세요.</span></div>${dots}${PCSUM()}</div>`;}
+  const k=ks.find(x=>!okm[x]),r=ROLES.find(x=>x.k===k),nm=P[r.p].n,until=(S.pcLock||{})[k]||0,lock=until>now,i=ks.indexOf(k);
+  return `<div class="pcbox"><div class="pchead"><b>팀원 ${i+1}/${ks.length} · ${nm}(${r.ko} 탐정)</b><span>${nm}${JG(nm)} 귓속말로 알려 준 말을 고르세요.</span></div>${dots}
+    <div class="pcq"><div class="pcw big"><img src="${F(r.p)}" alt=""><span><b>${nm}</b>${JG(nm)} 뭐라고 했어요?</span></div>
+    <div class="wopts">${pcOpts(k).map((o,j)=>`<button type="button" class="wopt" data-pc="${k}-${j}" ${lock?'disabled':''}>${esc(o.t)}</button>`).join('')}</div>${lock?`<div class="fb no">아니에요. ${nm}에게 다시 물어보세요. <span class="pcwait" data-until="${until}"></span></div>`:''}</div></div>`;}
+function JG(w){const c=w.charCodeAt(w.length-1)-0xAC00;return c>=0&&c<11172&&c%28?'이':'가';}
+function PCSUM(){return `<ul class="pcsum">${pcRoles().map(k=>{const r=ROLES.find(x=>x.k===k),o=(WOPT[k]||[]).find(x=>x.ok);return o?`<li><img src="${F(r.p)}" alt=""><span><b>${P[r.p].n}</b> ${esc(o.t)}</span></li>`:'';}).join('')}</ul>`;}
 function pcTick(){if(S.sc!==2){clearInterval(PC_T);PC_T=null;return;}const now=Date.now();let again=false;
   document.querySelectorAll('.pcwait').forEach(s=>{const l=Math.ceil((+s.dataset.until-now)/1000);if(l>0){s.textContent='('+l+'초 뒤에 다시 고를 수 있어요)';again=true;}});
   const c=document.getElementById('chk');if(c&&!c.hidden&&(S.m1Lock||0)>now){c.disabled=true;c.textContent=Math.ceil((S.m1Lock-now)/1000)+'초 뒤에 다시 출발';again=true;}
@@ -962,7 +988,7 @@ function wirePC(){
   document.querySelectorAll('[data-pc]').forEach(b=>b.onclick=()=>{const i=b.dataset.pc.lastIndexOf('-'),k=b.dataset.pc.slice(0,i),o=pcOpts(k)[+b.dataset.pc.slice(i+1)];if(!o)return;
     S.pcOk=S.pcOk||{};S.pcFirst=S.pcFirst||{};S.pcLock=S.pcLock||{};if(S.pcFirst[k]===undefined)S.pcFirst[k]=!!o.ok;
     if(o.ok)S.pcOk[k]=true;else{S.pcWrong=(S.pcWrong||0)+1;S.pcLock[k]=Date.now()+10000;}save();render();});
-  if(!pcDone()){const cm=$('#cmap');if(cm)cm.hidden=true;['#mw','#ms'].forEach(id=>{const e=$(id);if(!e)return;e.hidden=true;const h=e.previousElementSibling;if(h&&h.tagName==='H3')h.hidden=true;});const c=$('#chk');if(c)c.hidden=true;}
+  if(!pcDone()&&$('#cmap')){const cm=$('#cmap');if(cm)cm.hidden=true;['#mw','#ms'].forEach(id=>{const e=$(id);if(!e)return;e.hidden=true;const h=e.previousElementSibling;if(h&&h.tagName==='H3')h.hidden=true;});const c=$('#chk');if(c)c.hidden=true;}
   pcTimer();}
 
 /* ---------- 미션 1: 캠퍼스 지도에서 고르기 ---------- */
