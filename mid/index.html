@@ -989,12 +989,19 @@ function addPlayerCard(){
 /* ---------- 미션 1 전에: 팀원이 알려 준 말 확인 (듣지 않으면 못 풂) ---------- */
 let PC_T=null;
 function pcRoles(){return ROLES.map(r=>r.k).filter(k=>k!==S.role&&!(S.extra||[]).includes(k));}
-function pcOpts(k){const w=WOPT[k]||[];const ok=w.find(o=>o.ok);const bad=w.filter(o=>!o.ok&&!/내용은 맞지만|누구의 말/.test(o.fb)).slice(0,2).map(o=>({t:o.t,ok:0}));if(ok)bad.splice(Math.min(bad.length,({listen:1,doc:2,field:0,analysis:1})[k]??1),0,{t:ok.t,ok:1});return bad;}
+const PCO={
+ listen:[['비가 와서 무대가 2층으로 바뀌었대요.',0],['무대는 그대로, 대기실만 2층이래요.',1],['무대도 대기실도 2층이래요.',0]],
+ doc:[['무대를 벌써 2층으로 옮겼대요.',0],['비가 와서 무대가 중앙광장으로 바뀌었대요.',0],['무대는 중앙광장이에요. 비가 오면 2층으로 옮긴대요.',1]],
+ field:[['대기실이 학생회관 2층이래요.',1],['무대가 학생회관 2층이래요.',0],['대기실도 무대도 학생회관 2층이래요.',0]],
+ analysis:[['줄리앙이 무대가 2층이라고 했어요.',0],['마리코가 줄리앙한테 직접 들었는지 몰라요.',1],['마리코가 줄리앙한테 직접 들었어요.',0]]};
+const PB=t=>esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+
+function pcOpts(k){if(PCO[k])return PCO[k].map(([t,ok])=>({t,ok:ok?1:0}));const w=WOPT[k]||[];const ok=w.find(o=>o.ok);const bad=w.filter(o=>!o.ok&&!/내용은 맞지만|누구의 말/.test(o.fb)).slice(0,2).map(o=>({t:o.t,ok:0}));if(ok)bad.splice(Math.min(bad.length,({listen:1,doc:2,field:0,analysis:1})[k]??1),0,{t:ok.t,ok:1});return bad;}
 function pcDone(){return !!(S.demo||S.m1||pcRoles().every(k=>(S.pcOk||{})[k]));}
 function pcHTML(){if(pcDone())return '';const now=Date.now();
   return `<div class="pcbox"><div class="pchead"><b>먼저, 팀원이 알려 준 말을 확인해요</b><span>친구가 귓속말로 알려 준 내용을 고르세요. 잘 모르면 그 친구에게 다시 물어보세요.</span></div>${pcRoles().map(k=>{const r=ROLES.find(x=>x.k===k),nm=P[r.p].n,ok=(S.pcOk||{})[k],until=(S.pcLock||{})[k]||0,lock=until>now;
-    return `<div class="pcq"><div class="pcw"><img src="${F(r.p)}" alt=""><span><b>${nm}(${r.ko})</b>${((nm.charCodeAt(nm.length-1)-0xAC00)%28)?'이':'가'} 뭐라고 했어요?</span></div>${ok?`<div class="fb ok">✔ ${esc(WOPT[k].find(o=>o.ok).t)}</div>`:
-      `<div class="wopts">${pcOpts(k).map((o,j)=>`<button type="button" class="wopt" data-pc="${k}-${j}" ${lock?'disabled':''}>${esc(o.t)}</button>`).join('')}</div>${lock?`<div class="fb no">아니에요. ${nm}에게 다시 물어보세요. <span class="pcwait" data-until="${until}"></span></div>`:''}`}</div>`;}).join('')}</div>`;}
+    return `<div class="pcq"><div class="pcw"><img src="${F(r.p)}" alt=""><span><b>${nm}(${r.ko})</b>${((nm.charCodeAt(nm.length-1)-0xAC00)%28)?'이':'가'} 뭐라고 했어요?</span></div>${ok?`<div class="fb ok">✔ ${PB(pcOpts(k).find(o=>o.ok).t)}</div>`:
+      `<div class="wopts">${pcOpts(k).map((o,j)=>`<button type="button" class="wopt" data-pc="${k}-${j}" ${lock?'disabled':''}>${PB(o.t)}</button>`).join('')}</div>${lock?`<div class="fb no">아니에요. ${nm}에게 다시 물어보세요. <span class="pcwait" data-until="${until}"></span></div>`:''}`}</div>`;}).join('')}</div>`;}
 function pcTick(){if(S.sc!==2){clearInterval(PC_T);PC_T=null;return;}const now=Date.now();let again=false;
   document.querySelectorAll('.pcwait').forEach(s=>{const l=Math.ceil((+s.dataset.until-now)/1000);if(l>0){s.textContent='('+l+'초 뒤에 다시 고를 수 있어요)';again=true;}});
   const c=document.getElementById('chk');if(c&&!c.hidden&&(S.m1Lock||0)>now){c.disabled=true;c.textContent=Math.ceil((S.m1Lock-now)/1000)+'초 뒤에 다시 출발';again=true;}
